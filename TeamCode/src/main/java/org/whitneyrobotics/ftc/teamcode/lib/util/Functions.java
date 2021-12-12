@@ -34,6 +34,7 @@ public class Functions {
     /**
      * Converts angles from 0-360 to -180-180
      */
+
     public static double normalizeAngle(double angle) {
         while (angle > 180 || angle < -180) {
             if (angle > 180) {

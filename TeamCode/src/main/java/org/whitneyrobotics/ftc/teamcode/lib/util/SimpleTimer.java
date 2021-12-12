@@ -24,6 +24,10 @@ public class SimpleTimer
         expirationTime = currentTime + timerDuration;
     }
 
+    public void clear(){
+        expirationTime = (double) System.currentTimeMillis() / 1000;
+    }
+
     public boolean isExpired()
     {
         //DbgLog.msg("whs isExpired entered");

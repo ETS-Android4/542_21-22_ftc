@@ -293,7 +293,7 @@ public class Drivetrain {
         vBL = -gamepadInputY - gamepadInputX + gamepadInputTurn;
         vBR = -gamepadInputY + gamepadInputX - gamepadInputTurn;
          */
-        if(gamepadInputY<-0.9){ //speed cap for backwards
+        if(gamepadInputY <-0.9){ //speed cap for backwards
             frontLeft.setPower(vFL *0.7);
             frontRight.setPower(vFR * motorReductionForFRAndBL*0.7);
             backLeft.setPower(vBL * motorReductionForFRAndBL*0.7);

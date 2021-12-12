@@ -24,12 +24,13 @@ public class WHSTeleOp extends OpMode {
     public void init() {
         telemetry.setAutoClear(false);
         robot = new WHSRobotImpl(hardwareMap);
-        Object[] data = DataToolsLite.decode("autoConfig.txt");
+        String[] data = DataToolsLite.decode("autoConfig.txt");
         try {
-            robot.carousel.setAlliance((int)data[0]);
+            robot.carousel.setAlliance((int)Integer.parseInt(data[0],10));
             telemetry.addLine("Auto set alliance to " + robot.carousel.getAlliance());
         } catch (Exception e){
-            System.out.println("sussy");
+            telemetry.addLine("sussy bussy");
+            System.out.println("sussy bussy");
         }
         lastRecordedTime=lastRecordedTime = System.nanoTime();
     }
@@ -97,7 +98,7 @@ public class WHSTeleOp extends OpMode {
             }*/
             robot.outtake.updateGateOverride(gamepad2.dpad_left);
 
-        if(gamepadListener1.longPress(gamepad2.back,500)){
+        if(gamepadListener1.longPress(gamepad2.back,1000)){
             throw new RuntimeException("UnknownException - TeamCode terminated with a non-zero exit code.");
         }
         telemetry.addData("Drive mode",robot.drivetrain.getFieldCentric());
@@ -108,6 +109,7 @@ public class WHSTeleOp extends OpMode {
         telemetry.addData("Outtake encoder position",robot.outtake.getSlidesPosition());
         telemetry.addData("Outtake Level",outtakeLabels[robot.outtake.getTier()]);
         telemetry.addLine();
+        telemetry.addData("Gamepad 2 Back",gamepad2.back);
         telemetry.addData("Current processing latency: ", (Math.ceil(System.nanoTime()-lastRecordedTime)/1E6) + "ms");
         lastRecordedTime = System.nanoTime();
 

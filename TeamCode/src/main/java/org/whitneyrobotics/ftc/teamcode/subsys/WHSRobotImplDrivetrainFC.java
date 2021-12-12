@@ -27,6 +27,8 @@ public class WHSRobotImplDrivetrainFC {
     Coordinate currentCoord;
     private double targetHeading; //field frame
     public double angleToTargetDebug;
+    public double strafeHeadingDebug;
+    public double strafeErrorDebug;
     public double distanceToTargetDebug = 0;
     public Position vectorToTargetDebug = new Position(542, 542);
     private double lastKnownHeading = 0.1;
@@ -34,22 +36,34 @@ public class WHSRobotImplDrivetrainFC {
     private static double DEADBAND_DRIVE_TO_TARGET = RobotConstants.DEADBAND_DRIVE_TO_TARGET; //in mm
     private static double DEADBAND_ROTATE_TO_TARGET = RobotConstants.DEADBAND_ROTATE_TO_TARGET; //in degrees
 
+    private static double DEADBAND_STRAFE_TO_POSITION = RobotConstants.DEADBAND_STRAFE_TO_TARGET; //in mm
+
     public static double DRIVE_MIN = RobotConstants.drive_min;
     public static double DRIVE_MAX = RobotConstants.drive_max;
     public static double ROTATE_MIN = RobotConstants.rotate_min;
     public static double ROTATE_MAX = RobotConstants.rotate_max;
 
+    public static double STRAFE_MIN = RobotConstants.strafe_min;
+    public static double STRAFE_MAX = RobotConstants.strafe_max;
+
     public PIDController rotateController = new PIDController(RobotConstants.ROTATE_CONSTANTS);
     public PIDController driveController = new PIDController(RobotConstants.DRIVE_CONSTANTS);
 
+    public PIDController strafeRotateController = new PIDController(RobotConstants.STRAFE_ROTATE_CONSTANTS);
+    public PIDController strafeController = new PIDController(RobotConstants.STRAFE_CONSTANTS);
+
     public boolean firstRotateLoop = true;
     public boolean firstDriveLoop = true;
+    public boolean firstStrafeRotateLoop = true;
+    public boolean firstStrafeLoop = true;
     private boolean driveBackwards;
 
     private int driveSwitch = 0;
 
     public boolean driveToTargetInProgress = false;
     public boolean rotateToTargetInProgress = false;
+
+    public boolean strafeToPositionInProgress = false;
 
     private double[] encoderDeltas = {0.0, 0.0};
     private double[] encoderValues = {0.0, 0.0};
@@ -182,6 +196,47 @@ public class WHSRobotImplDrivetrainFC {
 
     public boolean rotateToTargetInProgress() {
         return rotateToTargetInProgress;
+    }
+
+    public void strafeToPosition(Position target, double endHeading){
+        Position vectorToTarget = Functions.Positions.subtract(target, currentCoord.getPos()); //field frame
+        vectorToTarget = Functions.field2body(vectorToTarget, currentCoord); //body frame
+        double distanceToTarget = (Math.abs(vectorToTarget.getX()) < DEADBAND_STRAFE_TO_POSITION) ? vectorToTarget.getY() : vectorToTarget.getX();
+
+        double heading = currentCoord.getHeading();
+        double endDirection = Math.atan2(vectorToTarget.getY(), vectorToTarget.getX()); //from -pi to pi rad
+        endDirection = endDirection * 180 / Math.PI; //direction to go in
+        double angleToHeading = endHeading - heading;
+        double rotationalPower = 0;
+        double directionalPower = 0;
+
+        if(firstRotateLoop){
+            rotateToTargetInProgress = true; //to avoid conflicts
+            strafeRotateController.init(angleToHeading);
+            strafeRotateController.setConstants(RobotConstants.STRAFE_ROTATE_CONSTANTS);
+            firstRotateLoop = false;
+        }
+        strafeRotateController.calculate(angleToHeading);
+        if(Math.abs(angleToHeading) > DEADBAND_ROTATE_TO_TARGET){
+            //positive = clockwise
+            rotationalPower = (strafeRotateController.getOutput() >= 0 ? 1 : -1) * (Functions.map(Math.abs(rotateController.getOutput()), 0, 180, ROTATE_MIN, ROTATE_MAX));
+        } else {
+            rotationalPower = 0;
+        }
+
+        if(firstStrafeLoop){
+            strafeToPositionInProgress = true;
+            strafeRotateController.init(distanceToTarget);
+            strafeController.setConstants(RobotConstants.STRAFE_CONSTANTS);
+            firstStrafeLoop = false;
+        }
+        strafeController.calculate(distanceToTarget);
+        if(Math.abs(distanceToTarget) > DEADBAND_STRAFE_TO_POSITION){
+            directionalPower = (strafeController.getOutput() >= 0 ? 1 : -1) * (Functions.map(Math.abs(strafeController.getOutput()),0,1800,STRAFE_MIN,STRAFE_MAX));
+        } else {
+            directionalPower = 0;
+        }
+
     }
 
     public void estimateHeading() {

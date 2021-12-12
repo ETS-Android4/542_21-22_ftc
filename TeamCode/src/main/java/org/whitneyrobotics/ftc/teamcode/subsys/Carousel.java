@@ -32,7 +32,10 @@ public class Carousel {
             timer.set(seconds);
             timerCarouselInProgress = true;
             powerSwitch.setState(1); //auto switches on carousel
-        } else if (timer.isExpired() && timerCarouselInProgress){
+        } else if(powerSwitch.currentState() == 0 && !timer.isExpired()){ //stops carousel from randomly stopping because of timer if you switch it off prematurely
+            timer.clear();
+            timerCarouselInProgress = false;
+        } else if (timer.isExpired() && timerCarouselInProgress) {
             powerSwitch.setState(0);
         }
         togglerOperate(toggle,changeAlliance);
@@ -94,7 +97,7 @@ public class Carousel {
 
     public void togglerOperate(boolean input, boolean blue){
         //allianceSwitch.changeState(alliance);
-        if(!timerCarouselInProgress){powerSwitch.changeState(input);}
+        powerSwitch.changeState(input);
         if(powerSwitch.currentState() == 0){
             wheel.setPower(0);
             timerCarouselInProgress = false;

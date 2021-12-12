@@ -23,6 +23,9 @@ public class DrivetrainBasicTest extends OpMode {
 
     private final double robotCenterWidthOffset = 152.4;
     private final double robotCenterLengthOffset = 6.5;
+    private static double rotateTarget = 0;
+    private static double[] rotateTargets = {30,45,75,90,120,150};
+    private Toggler angleSelector;
     private Position target;
 
     private final int TANK_DRIVE = 0;
@@ -37,6 +40,7 @@ public class DrivetrainBasicTest extends OpMode {
 
     @Override
     public void init(){
+        angleSelector = new Toggler(rotateTargets.length);
         dashboard = FtcDashboard.getInstance();
         dashboardTelemetry = dashboard.getTelemetry();;
         dashboardTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -48,11 +52,14 @@ public class DrivetrainBasicTest extends OpMode {
         robot.drivetrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Coordinate init = new Coordinate(-1800 + robotCenterWidthOffset,900,0);
         robot.setInitialCoordinate(init);
-        target = new Position(-1147.6,1400);
+        target = new Position(-147.6,1400);
     }
 
     @Override
     public void loop(){
+        RobotConstants.updateConstants();
+        angleSelector.changeState(gamepad1.dpad_right, gamepad1.dpad_left);
+        rotateTarget = rotateTargets[angleSelector.currentState()];
         LinkedHashMap<String,Object> data = new LinkedHashMap<>();
         //robot.estimateCoordinate();
         robot.estimateHeading();
@@ -98,7 +105,7 @@ public class DrivetrainBasicTest extends OpMode {
                 break;
             case RTT:
                 if(gamepad1.right_bumper){
-                    robot.rotateToTarget(60,false);
+                    robot.rotateToTarget(rotateTarget,false);
                 }
                 break;
             case DTT:
@@ -110,6 +117,7 @@ public class DrivetrainBasicTest extends OpMode {
                 break;
 
         }
+        data.put("Rotate Target Angle",rotateTarget);
         data.put("------------uwu","");
         data.put("Robot X",robot.getCoordinate().getX());
         data.put("Target X",target.getX());

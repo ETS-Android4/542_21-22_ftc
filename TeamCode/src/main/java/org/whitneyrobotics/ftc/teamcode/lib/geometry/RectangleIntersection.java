@@ -25,7 +25,7 @@ public class RectangleIntersection {
 
         //checks if X and Y are between shape boundaries
     public boolean checkForIntersection(Position point){
-        //we check from the middle using absolute value instead of using comparisons in case if top left > bottom left
+        //we check from the middle using absolute value instead of using comparisons in case if top left > bottom right
         double avgX = (topLeft.getX() + bottomRight.getX())/2;
         double avgY = (topLeft.getY() + bottomRight.getY())/2;
         return((Math.abs(point.getX() - avgX) <= Math.abs(topLeft.getX()-avgX)) && Math.abs(point.getY() - avgY) <= Math.abs(topLeft.getY()-avgY));

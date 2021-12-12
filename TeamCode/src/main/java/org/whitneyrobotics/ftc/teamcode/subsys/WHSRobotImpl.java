@@ -24,7 +24,7 @@ public class WHSRobotImpl {
    SwervePath currentSwervePath;
    public SwerveFollower swerveFollower;
 
-    private Toggler outtakeState = new Toggler(4);
+    private Toggler outtakeState = new Toggler(5);
     private Toggler levelSelector = new Toggler(4);
     private Toggler outtakeResetDisabler = new Toggler(2);
 
@@ -88,6 +88,7 @@ public class WHSRobotImpl {
     }
 
     public void driveToTarget(Position targetPos, boolean backwards) {
+        RobotConstants.updateConstants();
         Position vectorToTarget = Functions.Positions.subtract(targetPos, currentCoord.getPos()); //field frame
         vectorToTarget = Functions.field2body(vectorToTarget, currentCoord); //body frame
         vectorToTargetDebug = vectorToTarget;
@@ -146,7 +147,7 @@ public class WHSRobotImpl {
     }
 
     public void rotateToTarget(double targetHeading, boolean backwards) {
-
+        RobotConstants.updateConstants();
         double angleToTarget = targetHeading - currentCoord.getHeading();
         /*if (backwards && angleToTarget > 90) {
             angleToTarget = angleToTarget - 180;
@@ -274,10 +275,6 @@ public class WHSRobotImpl {
         swerveFollower = new SwerveFollower(path);
     }
 
-    public void updatePath(StrafePath path) {
-
-    }
-
     public void swerveToTarget() {
         drivetrain.operate(swerveFollower.calculateMotorPowers(getCoordinate(), drivetrain.getWheelVelocities()));
     }
@@ -355,7 +352,7 @@ public class WHSRobotImpl {
     }*/
 
     public void outtakeInStates(boolean forwards, boolean backwards, boolean outtakeUp, boolean outtakeDown, boolean zeroOuttake, double manualAdjustment, boolean override, boolean reverseState){
-        outtakeResetDisabler.changeState(reverseState);
+        /*outtakeResetDisabler.changeState(reverseState);
         if (outtakeResetDisabler.currentState() == 1){
                 switch (outtakeResetState){
                     case 0:
@@ -368,45 +365,59 @@ public class WHSRobotImpl {
                         }
                 }
 
-        }
+        }*/
         if(zeroOuttake){
             outtake.resetEncoder();
         }
         if(!outtake.slidingInProgress) {
             outtake.operateSlides(manualAdjustment / 3);
         }
-        if (!(outtakeResetDisabler.currentState() == 1)) {
-            switch (outtakeState.currentState()) {
-                case 0:
-                    stateDesc = "Outtake Level Selection";
-                    levelSelector.changeState(outtakeUp, outtakeDown);
-                    outtakeState.changeState(forwards, backwards);
-                    outtakeSubState = 0;
-                    break;
+        switch (outtakeState.currentState()) {
+            case 0:
+                stateDesc = "Outtake Level Selection";
+                levelSelector.changeState(outtakeUp, outtakeDown);
+                outtakeState.changeState(forwards);
+                if(outtakeListener.shortPress(backwards,250)){
+                    outtakeState.setState(1);
+                }
+                outtakeSubState = 0;
+                break;
                 case 1:
                     stateDesc = "Moving Slides With PID";
-                    levelSelector.changeState(outtakeUp, outtakeDown);
+                    //levelSelector.changeState(outtakeUp, outtakeDown);
                     outtake.operateWithoutGamepad(levelSelector.currentState());
+                    /*if(backwards){
+                        outtakeState.setState(4);
+                    }*/
                     if (!outtake.slidingInProgress) {
-                        outtakeSubState++;
-                    }
-                    outtakeState.changeState(forwards, backwards);
-                    break;
-                case 2:
-                    stateDesc = "Depositing";
-                    outtake.operateSlides(0);
-                    if (outtake.autoDrop() && !override) {
-                        outtakeState.setState(3);
+                        outtakeState.setState(2);
                     }
                     break;
+            case 2:
+                stateDesc = "Target level reached. Use left stick to adjust.";
+                levelSelector.changeState(outtakeUp, outtakeDown);
+                outtakeState.changeState(forwards);
+                if(outtakeListener.shortPress(backwards,250) || outtakeUp || outtakeDown){
+                    outtakeState.setState(1);
+                }
+                break;
                 case 3:
+                    stateDesc = "Depositing";
+                    if (outtake.autoDrop() && !override) {
+                        outtakeState.setState(4);
+                    }
+                    break;
+                case 4:
                     stateDesc = "Resetting Slides";
                     outtake.operateWithoutGamepad(0);
+                    if(outtakeListener.shortPress(backwards,250)){
+                        outtakeState.setState(1);
+                    }
                     if (!outtake.slidingInProgress) {
                         outtakeState.setState(0);
+
                     }
                     break;
-            }
         }
     }
 
