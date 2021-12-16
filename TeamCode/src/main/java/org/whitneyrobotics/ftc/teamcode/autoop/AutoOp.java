@@ -12,10 +12,9 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.DataToolsLite;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-@Autonomous (name="WHS Freight Frenzy Auto")
+@Autonomous (name="WHS Freight Frenzy Auto",preselectTeleOp = "WHS TeleOp")
 public class AutoOp extends OpMode {
 
     public WHSRobotImpl robot;
@@ -65,7 +64,7 @@ public class AutoOp extends OpMode {
 
     static final int INIT = 0;
     static final int ROTATE_CAROUSEL = 1;
-    static final int SHIPPING_HUB = 2;
+    static final int PRELOAD = 2;
     static final int WAREHOUSE = 3;
     static final int PARK = 4;
     static final int STOP = 5;
@@ -81,7 +80,7 @@ public class AutoOp extends OpMode {
     public void defineStatesEnabled(){
         stateEnabled[INIT] = true;
         stateEnabled[ROTATE_CAROUSEL] = true;
-        stateEnabled[SHIPPING_HUB] = false;
+        stateEnabled[PRELOAD] = false;
         stateEnabled[WAREHOUSE] = false;
         stateEnabled[PARK] = true;
         stateEnabled[STOP] = true;
@@ -90,7 +89,7 @@ public class AutoOp extends OpMode {
     private int parkLocation = 0;
     private boolean saveHeading = true;
 
-    public String[] stateNames = {"Init", "Rotate Carousel", "Shipping Hub", "Warehouse", "Park", "Stop"};
+    public String[] stateNames = {"Init", "Rotate Carousel", "Pre-load", "Warehouse", "Park", "Stop"};
 
     public float[][] barcodeLocation = new float[3][4];
 
@@ -162,7 +161,7 @@ public class AutoOp extends OpMode {
             STARTING_ALLIANCE = (int) Integer.parseInt(unformattedData[0]);
             STARTING_SIDE = (int) Integer.parseInt(unformattedData[1]);
             stateEnabled[ROTATE_CAROUSEL] = (boolean) Boolean.parseBoolean(unformattedData[3]);
-            stateEnabled[SHIPPING_HUB] = (boolean) Boolean.parseBoolean(unformattedData[4]);
+            stateEnabled[PRELOAD] = (boolean) Boolean.parseBoolean(unformattedData[4]);
             stateEnabled[WAREHOUSE] = (boolean) Boolean.parseBoolean(unformattedData[5]);
             numCycles = (int) Integer.parseInt(unformattedData[6]);
             stateEnabled[PARK] = (boolean) Boolean.parseBoolean(unformattedData[7]);
@@ -205,13 +204,13 @@ public class AutoOp extends OpMode {
         storageUnitPositions[RED] = new Position(-725,1650);
         storageUnitPositions[BLUE] = new Position(-1000,-1650);
 
-        carouselApproach[RED] = new Position(-1200, 1100);
+        carouselApproach[RED] = new Position(-1400, 1100);
         carouselApproach[BLUE] = new Position(-900,-1600);
 
-        carouselPositions[RED] = new Position(-1450,1550);
+        carouselPositions[RED] = new Position(-1550,1600);
         carouselPositions[BLUE] = new Position(-1630, -1590);
 
-        shippingHubDepositApproach[RED] = new Position(-400,-400);
+        shippingHubDepositApproach[RED] = new Position(-400,-600);
         shippingHubDepositApproach[BLUE] = new Position(-400,400);
 
         shippingHubDeposit[RED] = new Position(-150,150);
@@ -348,10 +347,10 @@ public class AutoOp extends OpMode {
                             break;
                     }
                     break;
-                case SHIPPING_HUB:
+                case PRELOAD:
                     switch (subState) {
                         case 0:
-                            robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], false); //check if outtake is on the back
+                            robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], true); //check if outtake is on the back
                             if (!robot.driveToTargetInProgress()) {
                                 subState++;
                             }
@@ -363,32 +362,35 @@ public class AutoOp extends OpMode {
                             }
                             break;
                         case 2:
+                            robot.drivetrain.operate(0,0);
                             robot.outtake.operateWithoutGamepad(scanLevel);
                             if(!robot.outtake.slidingInProgress) {
                                 subState++;
                             }
                             break;
                         case 3:
+                            robot.drivetrain.operate(0,0);
                             if(robot.outtake.autoDrop()){
                                 subState++;
                             }
                             break;
                         case 4:
                             robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], false);
-                            if(robot.driveToTargetInProgress()){
+                            if(!robot.driveToTargetInProgress()){
                                 subState++;
                             }
                             break;
                         case 5:
-                            robot.driveToTarget(carouselApproach[STARTING_ALLIANCE],false);
-                            if(robot.driveToTargetInProgress()){
-                                subState++;
-                            }
-                            break;
-                        case 6:
+                            robot.drivetrain.operate(0,0);
                             robot.outtake.operateWithoutGamepad(0);
                             if (!robot.outtake.slidingInProgress){
                                 advanceState();
+                            }
+                            break;
+                        case 6:
+                            robot.driveToTarget(carouselApproach[STARTING_ALLIANCE],false);
+                            if(!robot.driveToTargetInProgress()){
+                                subState++;
                             }
                             break;
                     }
@@ -505,7 +507,8 @@ public class AutoOp extends OpMode {
                                 }
                                 break;
                             case 1:
-                                robot.driveToTarget(new Position(-900,1700*((STARTING_ALLIANCE==1) ? -1 : 1)),false);
+                                //robot.driveToTarget(new Position(-900,1700*((STARTING_ALLIANCE==1) ? -1 : 1)),false);
+                                robot.rotateToTarget(270,true);
                                 if(!robot.rotateToTargetInProgress()){
                                     advanceState();
                                 }
