@@ -23,6 +23,8 @@ public class DrivetrainExperimental {
     public DcMotorEx backRight;
     //public DcMotor leftOdometry;
 
+    public double brakePower = 0.0;
+
     private Toggler orientationSwitch = new Toggler(2);
     private Toggler fieldCentricSwitch = new Toggler(2);
 
@@ -289,10 +291,10 @@ public class DrivetrainExperimental {
         vBL = -gamepadInputY - gamepadInputX + gamepadInputTurn;
         vBR = -gamepadInputY + gamepadInputX - gamepadInputTurn;
          */
-        frontLeft.setPower(vFL);
-        frontRight.setPower(vFR * motorReductionForFRAndBL);
-        backLeft.setPower(vBL * motorReductionForFRAndBL);
-        backRight.setPower(vBR * motorReductionForBR);
+        frontLeft.setPower(vFL * (1-brakePower));
+        frontRight.setPower(vFR * motorReductionForFRAndBL * (1-brakePower));
+        backLeft.setPower(vBL * motorReductionForFRAndBL * (1-brakePower));
+        backRight.setPower(vBR * motorReductionForBR * (1-brakePower));
     }
 
     public void operateMecanumDriveScaled(double gamepadInputX, double gamepadInputY, double gamepadInputTurn, double heading) {
@@ -322,10 +324,10 @@ public class DrivetrainExperimental {
         vBL = -scaledY - scaledX + scaledTurn;
         vBR = -scaledY + scaledX - scaledTurn;
          */
-        frontLeft.setPower(vFL);
-        frontRight.setPower(vFR * motorReductionForFRAndBL);
-        backLeft.setPower(vBL * motorReductionForFRAndBL);
-        backRight.setPower(vBR * motorReductionForBR);
+        frontLeft.setPower(vFL * (1-brakePower));
+        frontRight.setPower(vFR * motorReductionForFRAndBL * (1-brakePower));
+        backLeft.setPower(vBL * motorReductionForFRAndBL * (1-brakePower));
+        backRight.setPower(vBR * motorReductionForBR * (1-brakePower));
     }
 
     public void switchFieldCentric(boolean gamepadInput) {
@@ -381,5 +383,9 @@ public class DrivetrainExperimental {
         double rightMM = deadwheelConverter.encToMM(rightDelta);
 
         return new double[] {leftMM, middleMM, rightMM};
+    }
+
+    public void brake(double brakePower){
+        this.brakePower = Math.min(brakePower,1);
     }
 }

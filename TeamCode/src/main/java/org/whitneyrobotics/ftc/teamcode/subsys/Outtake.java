@@ -36,8 +36,8 @@ public class Outtake {
     public double errorDebug = 0;
 
     //Emergency Stop Cases
-    private double slidesUpperBound = 3200;
-    private double slidesLowerBound = -40;
+    private static final double SLIDES_UPPER_BOUND = 3500;
+    private static final double SLIDES_LOWER_BOUND = -40;
 
     private enum GatePositions{
         CLOSE(1),
@@ -160,7 +160,23 @@ public class Outtake {
 
     public double getAmperage(){return linearSlides.getCurrent(CurrentUnit.MILLIAMPS);}
 
-    public void operateSlides(double power){linearSlides.setPower(power);}
+    public void operateSlides(double power){
+        if(linearSlides.getCurrentPosition() >= SLIDES_UPPER_BOUND){
+            if(power < 0){
+                linearSlides.setPower(power);
+            } else {
+                linearSlides.setPower(0);
+            }
+        } else if (linearSlides.getCurrentPosition() <= SLIDES_LOWER_BOUND){
+            if(power > 0) {
+                linearSlides.setPower(power);
+            } else {
+                linearSlides.setPower(0);
+            }
+        } else {
+            linearSlides.setPower(power);
+        }
+    }
 
     public double getSlidesPosition(){return linearSlides.getCurrentPosition();}
 

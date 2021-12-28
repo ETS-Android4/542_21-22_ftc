@@ -23,6 +23,9 @@ public class Drivetrain {
     public DcMotorEx backRight;
     //public DcMotor leftOdometry;
 
+    //experimental -Perry
+    private double brakePower = 0.0;
+
     private Toggler orientationSwitch = new Toggler(2);
     private Toggler fieldCentricSwitch = new Toggler(2);
 
@@ -294,15 +297,15 @@ public class Drivetrain {
         vBR = -gamepadInputY + gamepadInputX - gamepadInputTurn;
          */
         if(gamepadInputY <-0.9){ //speed cap for backwards
-            frontLeft.setPower(vFL *0.7);
-            frontRight.setPower(vFR * motorReductionForFRAndBL*0.7);
-            backLeft.setPower(vBL * motorReductionForFRAndBL*0.7);
-            backRight.setPower(vBR * motorReductionForBR*0.7);
+            frontLeft.setPower(vFL *0.7 * (1-brakePower));
+            frontRight.setPower(vFR * motorReductionForFRAndBL*0.7 * (1-brakePower));
+            backLeft.setPower(vBL * motorReductionForFRAndBL*0.7 * (1-brakePower));
+            backRight.setPower(vBR * motorReductionForBR*0.7 * (1-brakePower));
         } else {
-            frontLeft.setPower(vFL);
-            frontRight.setPower(vFR * motorReductionForFRAndBL);
-            backLeft.setPower(vBL * motorReductionForFRAndBL);
-            backRight.setPower(vBR * motorReductionForBR);
+            frontLeft.setPower(vFL * (1-brakePower));
+            frontRight.setPower(vFR * motorReductionForFRAndBL * (1-brakePower));
+            backLeft.setPower(vBL * motorReductionForFRAndBL * (1-brakePower));
+            backRight.setPower(vBR * motorReductionForBR * (1-brakePower));
         }
     }
 
@@ -322,15 +325,15 @@ public class Drivetrain {
         vBR = -scaledY + scaledX - scaledTurn;
          */
         if(gamepadInputY<-0.9){
-            frontLeft.setPower(vFL *0.7);
-            frontRight.setPower(vFR * motorReductionForFRAndBL*0.7);
-            backLeft.setPower(vBL * motorReductionForFRAndBL*0.7);
-            backRight.setPower(vBR * motorReductionForBR*0.7);
+            frontLeft.setPower(vFL *0.7 * (1-brakePower));
+            frontRight.setPower(vFR * motorReductionForFRAndBL*0.7 * (1-brakePower));
+            backLeft.setPower(vBL * motorReductionForFRAndBL*0.7 * (1-brakePower));
+            backRight.setPower(vBR * motorReductionForBR*0.7 * (1-brakePower));
         } else {
-            frontLeft.setPower(vFL);
-            frontRight.setPower(vFR * motorReductionForFRAndBL);
-            backLeft.setPower(vBL * motorReductionForFRAndBL);
-            backRight.setPower(vBR * motorReductionForBR);
+            frontLeft.setPower(vFL * (1-brakePower));
+            frontRight.setPower(vFR * motorReductionForFRAndBL * (1-brakePower));
+            backLeft.setPower(vBL * motorReductionForFRAndBL * (1-brakePower));
+            backRight.setPower(vBR * motorReductionForBR * (1-brakePower));
         }
     }
 
@@ -387,5 +390,9 @@ public class Drivetrain {
         double rightMM = deadwheelConverter.encToMM(rightDelta);
 
         return new double[] {leftMM, middleMM, rightMM};
+    }
+
+    public void brake(double brakePower){
+        this.brakePower = Math.min(brakePower,1);
     }
 }

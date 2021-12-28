@@ -173,20 +173,20 @@ public class AutoOp extends OpMode {
         }
 
         // figure out actual values for this
-        startingPositions[RED][BOTTOM] = new Position(-1647.6,765.1);
-        startingPositions[RED][TOP] = new Position(-1647.6,-165.1);
-        startingPositions[BLUE][BOTTOM] = new Position(-1647.6,-765.1);
-        startingPositions[BLUE][TOP] = new Position(-1647.6,165.1);
+        startingPositions[RED][BOTTOM] = new Position(-1676.4,774.7);
+        startingPositions[RED][TOP] = new Position(-1676.4,-165.1);
+        startingPositions[BLUE][BOTTOM] = new Position(-1676.4,-774.7);
+        startingPositions[BLUE][TOP] = new Position(-1676.4,165.1);
 
-        startingOffsetPositions[RED][BOTTOM] = new Position(-1447.6,765.1);
-        startingOffsetPositions[RED][TOP] = new Position(-1447.6,-165.1);
-        startingOffsetPositions[BLUE][BOTTOM] = new Position(-1447.6,-765.1);
-        startingOffsetPositions[BLUE][TOP] = new Position(-1447.6,165.1);
+        startingOffsetPositions[RED][BOTTOM] = new Position(-1476.4,774.7);
+        startingOffsetPositions[RED][TOP] = new Position(-1476.4,-165.1);
+        startingOffsetPositions[BLUE][BOTTOM] = new Position(-1476.4,-774.7);
+        startingOffsetPositions[BLUE][TOP] = new Position(-1476.4,165.1);
 
-        shippingHubApproach[RED] = new Position(-600,1200);
+        shippingHubApproach[RED] = new Position(-609.6,1009.6);
         shippingHubApproach[BLUE] = new Position(-600,-1200);
 
-        shippingHubPosition[RED] = new Position(-600,500);
+        shippingHubPosition[RED] = new Position(-609.6,625);
         shippingHubPosition[BLUE] = new Position(-600,-500);
 
         //sharedShippingHub[RED] = new Position(-152.4, -1200);
@@ -201,13 +201,13 @@ public class AutoOp extends OpMode {
         warehouse[RED] = new Position(-1647,-1500);
         warehouse[BLUE] = new Position(-1490,1500);
 
-        storageUnitPositions[RED] = new Position(-725,1650);
+        storageUnitPositions[RED] = new Position(-914.4,1469.2);
         storageUnitPositions[BLUE] = new Position(-1000,-1650);
 
-        carouselApproach[RED] = new Position(-1400, 1100);
+        carouselApproach[RED] = new Position(-1400.2, 1329.2);
         carouselApproach[BLUE] = new Position(-900,-1600);
 
-        carouselPositions[RED] = new Position(-1550,1600);
+        carouselPositions[RED] = new Position(-1469.6,1560.2);
         carouselPositions[BLUE] = new Position(-1630, -1590);
 
         shippingHubDepositApproach[RED] = new Position(-400,-600);
@@ -269,7 +269,7 @@ public class AutoOp extends OpMode {
 
     @Override
     public void loop() {
-        if(gamepad1.y){
+        if(gamepad1.y || gamepad2.y){
             throw new RuntimeException("bad");
         }
 
@@ -504,11 +504,12 @@ public class AutoOp extends OpMode {
                                 robot.driveToTarget(storageUnitPositions[STARTING_ALLIANCE], false);
                                 if (!robot.driveToTargetInProgress()) {
                                     subState++;
+                                    robot.firstRotateLoop = true; //bc robot rotateToTarget sus
                                 }
                                 break;
                             case 1:
                                 //robot.driveToTarget(new Position(-900,1700*((STARTING_ALLIANCE==1) ? -1 : 1)),false);
-                                robot.rotateToTarget(270,true);
+                                robot.rotateToTarget(-270,false);
                                 if(!robot.rotateToTargetInProgress()){
                                     advanceState();
                                 }
@@ -571,7 +572,7 @@ public class AutoOp extends OpMode {
         telemetry.addData("Starting Side",(STARTING_SIDE==BOTTOM) ? "BOTTOM" : "TOP");
         telemetry.addData("Starting Alliance",(STARTING_ALLIANCE == 0) ? "RED" : "BLUE");
         telemetry.addData("Estimated Position",String.format("%s,%s",robot.getCoordinate().getX(),robot.getCoordinate().getY()));
-        telemetry.addData("a","a");
+        telemetry.addData("Heading",robot.getCoordinate().getHeading());
         telemetry.addLine();
         telemetry.addData("Drive to target:", robot.driveToTargetInProgress());
         telemetry.addData("Rotate to target:", robot.rotateToTargetInProgress());

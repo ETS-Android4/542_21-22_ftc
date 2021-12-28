@@ -91,9 +91,9 @@ public class DrivetrainMotorCalibration extends OpMode {
                 config.run(gamepad1.dpad_right,gamepad1.dpad_left,gamepad1.dpad_down,gamepad1.dpad_up);
                 if(gamepad1.a && gamepad1.b){
                     Object[] results = config.getOutputs();
-                    motorPower = (double)results[0];
-                    marginOfError = (int)results[1];
-                    onMat = (boolean)results[2];
+                    motorPower = (double)Double.parseDouble(results[0].toString());
+                    marginOfError = (int)Integer.parseInt(results[1].toString());
+                    onMat = (boolean)Boolean.parseBoolean(results[2].toString());
                     startTime = System.nanoTime();
                     advanceState();
                 }
@@ -122,6 +122,8 @@ public class DrivetrainMotorCalibration extends OpMode {
                     state = REVERSE;
                     break;
                 }
+
+                robot.drivetrain.operate(new double[]{motorPower*FLReduction,motorPower*FRReduction,motorPower*BLReduction,motorPower*BRReduction});
 
                 double[] velocities = robot.drivetrain.getAllWheelVelocitiesTPS();
                 double avgVelocity = 0.25*(velocities[0]+velocities[1]+velocities[2]+velocities[3]);
@@ -226,8 +228,8 @@ public class DrivetrainMotorCalibration extends OpMode {
     }
 
     private String calculateAndFormatTimeElapsed(long initTime){
-        int ElapsedSeconds = (int)Math.round((System.nanoTime()-initTime)/1E9);
+        long ElapsedSeconds = Math.round((System.nanoTime()-initTime)/1E9);
         DecimalFormat secondsFormat = new DecimalFormat("##");
-        return String.format("%d:%d",Math.floor(ElapsedSeconds/60),secondsFormat.format(ElapsedSeconds%60));
+        return String.format("%s:%s",(int)Math.floor(ElapsedSeconds/60.0),secondsFormat.format(ElapsedSeconds%60));
     }
 }

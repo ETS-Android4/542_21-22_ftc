@@ -11,7 +11,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 public class Carousel {
     private DcMotorEx wheel;
     private final static double power = 0.4;
-    private final static double seconds = 1.5;
+    private final static double seconds = 1.7;
     private SimpleTimer timer = new SimpleTimer();
     private Toggler allianceSwitch = new Toggler(2);
     private boolean timerCarouselInProgress = false;

@@ -30,6 +30,7 @@ public class WHSRobotImpl {
 
     private int outtakeSubState = 0;
     private GamepadListener outtakeListener = new GamepadListener();
+    private GamepadListener outtakeListener2 = new GamepadListener();
     private String[] outtakeLabels = {"Level 1","Level 1.5 (unbalanced)", "Level 2", "Level 3"};
     public String stateDesc = "";
 
@@ -116,6 +117,7 @@ public class WHSRobotImpl {
                     driveToTargetInProgress = true;
                     driveController.init(distanceToTarget);
                     firstDriveLoop = false;
+                    firstRotateLoop = true;
                 }
 
                 driveController.setConstants(RobotConstants.DRIVE_CONSTANTS);
@@ -139,6 +141,7 @@ public class WHSRobotImpl {
                     driveToTargetInProgress = false;
                     rotateToTargetInProgress = false;
                     firstDriveLoop = true;
+                    firstRotateLoop = true;
                     driveSwitch = 0;
                 }
                 // end of weird code
@@ -147,7 +150,7 @@ public class WHSRobotImpl {
     }
 
     public void rotateToTarget(double targetHeading, boolean backwards) {
-        RobotConstants.updateConstants();
+        //RobotConstants.updateConstants();
         double angleToTarget = targetHeading - currentCoord.getHeading();
         /*if (backwards && angleToTarget > 90) {
             angleToTarget = angleToTarget - 180;
@@ -366,11 +369,11 @@ public class WHSRobotImpl {
                 }
 
         }*/
-        if(zeroOuttake){
+        if(outtakeListener2.longPress(zeroOuttake,500)){
             outtake.resetEncoder();
         }
         if(!outtake.slidingInProgress) {
-            outtake.operateSlides(manualAdjustment / 3);
+            outtake.operateSlides(manualAdjustment / 2);
         }
         switch (outtakeState.currentState()) {
             case 0:
@@ -394,11 +397,14 @@ public class WHSRobotImpl {
                     }
                     break;
             case 2:
-                stateDesc = "Target level reached. Use left stick to adjust.";
+                stateDesc = "Target level reached. Use left stick to adjust. Short press B to snap back to selected level, and long press to go back to pre-select.";
                 levelSelector.changeState(outtakeUp, outtakeDown);
                 outtakeState.changeState(forwards);
-                if(outtakeListener.shortPress(backwards,250) || outtakeUp || outtakeDown){
+                if(outtakeListener.shortPress(backwards,500) || outtakeUp || outtakeDown){
                     outtakeState.setState(1);
+                }
+                else if(outtakeListener.longPress(backwards,500)){
+                     outtakeState.setState(4);
                 }
                 break;
                 case 3:
