@@ -24,6 +24,10 @@ public class WHSTeleOp extends OpMode {
     private double teleOpTime = 90.3;
     private SimpleTimer teleTimer = new SimpleTimer();
     private boolean teleStarted = false;
+    private SimpleTimer teleCountdown = new SimpleTimer();
+    private int countdownState = 0;
+    private boolean useCountdown = false;
+
     private long startTime;
     String[] outtakeLabels = new String[]{"Level 1","Level 1.5","Level 2", "Level 3"};
 
@@ -39,14 +43,17 @@ public class WHSTeleOp extends OpMode {
             robot.carousel.setAlliance((int)Integer.parseInt(data[0],10));
             autoEndTele = ((boolean)Boolean.parseBoolean(teleData[0]));
             teleOpTime += ((boolean)Boolean.parseBoolean((teleData[1])) ? 30.0 : 0.0);
+            useCountdown = ((boolean)Boolean.parseBoolean(teleData[2]));
             telemetry.addLine("Auto set alliance to " + robot.carousel.getAlliance());
             telemetry.addData("TeleOp Timer",autoEndTele);
             telemetry.addData("Endgame time included", ((boolean)Boolean.parseBoolean((teleData[1]))));
+            telemetry.addData("Countdown",useCountdown);
         } catch (Exception e){
             telemetry.addLine("sussy bussy");
             System.out.println("sussy bussy");
         }
         lastRecordedTime=lastRecordedTime = System.nanoTime();
+        robot.levelSelector.setState(robot.levelSelector.howManyStates());
     }
 
     // Driver 1 (Gamepad 1): Drivetrain, Intake
@@ -54,12 +61,6 @@ public class WHSTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        if(!teleStarted){
-            startTime = System.nanoTime();
-            teleTimer.set(teleOpTime);
-            teleStarted = true;
-        }
-
         telemetry.setAutoClear(true);
         robot.estimateHeading();
 
@@ -67,6 +68,63 @@ public class WHSTeleOp extends OpMode {
         // Drivetrain
         switch(teleState) {
             case 0:
+                if(useCountdown){
+                    switch(countdownState){
+                        case 0:
+                            teleCountdown.set(3);
+                            countdownState++;
+                            break;
+                        case 1:
+                            telemetry.addLine("Drivers, pick up your controllers.");
+                            if(teleCountdown.isExpired()){
+                                teleCountdown.set(1);
+                                countdownState++;
+                            }
+                            break;
+                        case 2:
+                            telemetry.addLine("3");
+                            if(teleCountdown.isExpired()){
+                                teleCountdown.set(1);
+                                countdownState++;
+                            }
+                            break;
+                        case 3:
+                            telemetry.addLine("2");
+                            if(teleCountdown.isExpired()){
+                                teleCountdown.set(1);
+                                countdownState++;
+                            }
+                            break;
+                        case 4:
+                            telemetry.addLine("1");
+                            if(teleCountdown.isExpired()){
+                                teleCountdown.set(10);
+                                countdownState++;
+                                teleState = 1;
+
+                                //if(!teleStarted){
+                                    startTime = System.nanoTime();
+                                    teleTimer.set(teleOpTime);
+                                    teleStarted = true;
+                                //}
+                            }
+                            break;
+                    }
+                } else {
+                    teleState = 1;
+                    //if(!teleStarted){
+                        startTime = System.nanoTime();
+                        teleTimer.set(teleOpTime);
+                        teleStarted = true;
+                    //}
+                }
+                break;
+
+
+            case 1:
+                if(!teleCountdown.isExpired()){
+                    telemetry.addLine("*fanfare*");
+                }
                 if (gamepad1.back) {
                     //robot.setInitialCoordinate(new Coordinate(0, 0, 0));
                 }
@@ -122,8 +180,22 @@ public class WHSTeleOp extends OpMode {
                             break;
                         }
                 }*/
+                telemetry.addData("Drive mode",robot.drivetrain.getFieldCentric());
+                telemetry.addData("Selected Outtake Level",robot.outtakeLevel());
+                telemetry.addData("Sliding in Progress",robot.outtake.slidingInProgress);
+                telemetry.addData("Outtake state",robot.stateDesc);
+                telemetry.addData("Carousel Alliance",robot.carousel.getAlliance());
+                telemetry.addData("Outtake encoder position",robot.outtake.getSlidesPosition());
+                telemetry.addData("Outtake Level",outtakeLabels[robot.outtake.getTier()]);
+                telemetry.addLine();
+                telemetry.addData("Gamepad 2 Back",gamepad2.back);
+                telemetry.addData("Current processing latency: ", (Math.ceil(System.nanoTime()-lastRecordedTime)/1E6) + "ms");
+                telemetry.addData("Time Elapsed",calculateAndFormatTimeElapsed(startTime));
+                if(autoEndTele && teleTimer.isExpired()){
+                    teleState = 2;
+                }
                 break;
-            case 1:
+            case 2:
                 robot.drivetrain.operate(0,0);
                 robot.intake.disable();
                 robot.outtake.operateSlides(0);
@@ -134,25 +206,12 @@ public class WHSTeleOp extends OpMode {
                 }
                 break;
         }
-        if(autoEndTele && teleTimer.isExpired()){
-            teleState = 1;
-        }
 
         robot.outtake.updateGateOverride(gamepad2.dpad_left);
         if(gamepadListener1.longPress(gamepad2.back,1000)){
             throw new RuntimeException("UnknownException - TeamCode terminated with a non-zero exit code.");
         }
-        telemetry.addData("Drive mode",robot.drivetrain.getFieldCentric());
-        telemetry.addData("Selected Outtake Level",robot.outtakeLevel());
-        telemetry.addData("Sliding in Progress",robot.outtake.slidingInProgress);
-        telemetry.addData("Outtake state",robot.stateDesc);
-        telemetry.addData("Carousel Alliance",robot.carousel.getAlliance());
-        telemetry.addData("Outtake encoder position",robot.outtake.getSlidesPosition());
-        telemetry.addData("Outtake Level",outtakeLabels[robot.outtake.getTier()]);
-        telemetry.addLine();
-        telemetry.addData("Gamepad 2 Back",gamepad2.back);
-        telemetry.addData("Current processing latency: ", (Math.ceil(System.nanoTime()-lastRecordedTime)/1E6) + "ms");
-        telemetry.addData("Time Elapsed",calculateAndFormatTimeElapsed(startTime));
+
         lastRecordedTime = System.nanoTime();
 
     }

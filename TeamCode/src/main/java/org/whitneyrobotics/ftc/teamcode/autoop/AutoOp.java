@@ -302,9 +302,12 @@ public class AutoOp extends OpMode {
                                     subState++;
                                     break;
                                 case 1:
-                                    robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][STARTING_SIDE], false);
-                                    if (!robot.driveToTargetInProgress()) {
-                                        subState++;
+                                    //robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][STARTING_SIDE], false);
+                                    //if (!robot.driveToTargetInProgress()) {
+                                        //advanceState();
+                                    //}
+                                    robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][STARTING_SIDE],false);
+                                    if(!robot.driveToTargetInProgress()){
                                         advanceState();
                                     }
                                     break;
@@ -509,7 +512,7 @@ public class AutoOp extends OpMode {
                                 break;
                             case 1:
                                 //robot.driveToTarget(new Position(-900,1700*((STARTING_ALLIANCE==1) ? -1 : 1)),false);
-                                robot.rotateToTarget(-270,false);
+                                robot.rotateToTarget(90,true);
                                 if(!robot.rotateToTargetInProgress()){
                                     advanceState();
                                 }
@@ -561,6 +564,7 @@ public class AutoOp extends OpMode {
                 case STOP:
                     robot.drivetrain.operate(0,0);
                     DataToolsLite.encode("heading.txt",robot.getCoordinate().getHeading());
+                    DataToolsLite.encode("teleOpConfig.txt",new Object[]{false, false, false});
                     break;
                 default:
                     break;

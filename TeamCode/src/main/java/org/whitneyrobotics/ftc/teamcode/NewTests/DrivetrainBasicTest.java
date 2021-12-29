@@ -24,7 +24,7 @@ public class DrivetrainBasicTest extends OpMode {
     private final double robotCenterWidthOffset = 152.4;
     private final double robotCenterLengthOffset = 6.5;
     private static double rotateTarget = 0;
-    private static double[] rotateTargets = {30,45,75,90,120,150};
+    private static double[] rotateTargets = {30,45,75,90,120,150,180};
     private Toggler angleSelector;
     private Position target;
 

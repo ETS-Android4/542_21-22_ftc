@@ -22,7 +22,10 @@ public class ConfigureTele extends OpMode {
         SelectionMenu.Prompt IncludeEndgameTime = new SelectionMenu.Prompt("Include Endgame time (30 sec)")
                 .addSelection("YES",true)
                 .addSelection("NO",false);
-        teleOpConfig = new SelectionMenu("TeleOp Configuration",AutoEndTele, IncludeEndgameTime)
+        SelectionMenu.Prompt Countdown = new SelectionMenu.Prompt("Teleop Countdown")
+                .addSelection("NO",false)
+                .addSelection("YES",true);
+        teleOpConfig = new SelectionMenu("TeleOp Configuration",AutoEndTele, IncludeEndgameTime,Countdown)
                 .addInstructions("Press A & B to save. Use dpad L/R to navigate prompts and use up and down to select.");
         teleOpConfig.init();
     }

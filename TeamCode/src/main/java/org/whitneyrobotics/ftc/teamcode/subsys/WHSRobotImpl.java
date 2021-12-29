@@ -25,7 +25,7 @@ public class WHSRobotImpl {
    public SwerveFollower swerveFollower;
 
     private Toggler outtakeState = new Toggler(5);
-    private Toggler levelSelector = new Toggler(4);
+    public Toggler levelSelector = new Toggler(4);
     private Toggler outtakeResetDisabler = new Toggler(2);
 
     private int outtakeSubState = 0;
@@ -96,7 +96,7 @@ public class WHSRobotImpl {
         double distanceToTarget = vectorToTarget.getX(); /*Functions.calculateMagnitude(vectorToTarget) * (vectorToTarget.getX() >= 0 ? 1 : -1)*/;
         distanceToTargetDebug = distanceToTarget;
 
-        double degreesToRotate = Math.atan2(vectorToTarget.getY(), vectorToTarget.getX()); //from -pi to pi rad
+        double degreesToRotate = -Math.atan2(vectorToTarget.getY(), vectorToTarget.getX()); //from -pi to pi rad
         degreesToRotate = degreesToRotate * 180 / Math.PI;
         targetHeading = Functions.normalizeAngle(currentCoord.getHeading() - degreesToRotate); //-180 to 180 deg
 
@@ -182,8 +182,8 @@ public class WHSRobotImpl {
         double power = (rotateController.getOutput() >= 0 ? 1 : -1) * (Functions.map(Math.abs(rotateController.getOutput()), 0, 180, ROTATE_MIN, ROTATE_MAX));
 
         if (Math.abs(angleToTarget) > DEADBAND_ROTATE_TO_TARGET/* && rotateController.getDerivative() < 40*/) {
-            drivetrain.operateLeft(power);
-            drivetrain.operateRight(-power);
+            drivetrain.operateLeft(-power);
+            drivetrain.operateRight(power);
             rotateToTargetInProgress = true;
         } else {
             drivetrain.operateLeft(0.0);
