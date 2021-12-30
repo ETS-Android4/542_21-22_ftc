@@ -183,26 +183,26 @@ public class AutoOp extends OpMode {
         startingOffsetPositions[BLUE][BOTTOM] = new Position(-1476.4,-774.7);
         startingOffsetPositions[BLUE][TOP] = new Position(-1476.4,165.1);
 
-        shippingHubApproach[RED] = new Position(-609.6,1009.6);
+        shippingHubApproach[RED] = new Position(-550,1009.6);
         shippingHubApproach[BLUE] = new Position(-600,-1200);
 
-        shippingHubPosition[RED] = new Position(-609.6,625);
+        shippingHubPosition[RED] = new Position(-659.6,675);
         shippingHubPosition[BLUE] = new Position(-600,-500);
 
         //sharedShippingHub[RED] = new Position(-152.4, -1200);
         //sharedShippingHub[BLUE] = new Position(-152.4, 1200);
 
-        gapApproach[RED] = new Position(-1647,0);
-        gapApproach[BLUE] = new Position(-1647,0);
+        gapApproach[RED] = new Position(-1680,-200);
+        gapApproach[BLUE] = new Position(-1680,200);
 
-        gapCrossPositions[RED] = new Position(-1647,-1000);
-        gapCrossPositions[BLUE] = new Position(-1647,1300);
+        gapCrossPositions[RED] = new Position(-1700,-1400);
+        gapCrossPositions[BLUE] = new Position(-1700,1400);
 
-        warehouse[RED] = new Position(-1647,-1500);
-        warehouse[BLUE] = new Position(-1490,1500);
+        warehouse[RED] = new Position(-1670,-1550);
+        warehouse[BLUE] = new Position(-1670,1550);
 
-        storageUnitPositions[RED] = new Position(-914.4,1469.2);
-        storageUnitPositions[BLUE] = new Position(-1000,-1650);
+        storageUnitPositions[RED] = new Position(-1100,1425.2);
+        storageUnitPositions[BLUE] = new Position(-1100,-1425.2);
 
         carouselApproach[RED] = new Position(-1400.2, 1329.2);
         carouselApproach[BLUE] = new Position(-900,-1600);
@@ -210,11 +210,11 @@ public class AutoOp extends OpMode {
         carouselPositions[RED] = new Position(-1469.6,1560.2);
         carouselPositions[BLUE] = new Position(-1630, -1590);
 
-        shippingHubDepositApproach[RED] = new Position(-400,-600);
-        shippingHubDepositApproach[BLUE] = new Position(-400,400);
+        shippingHubDepositApproach[RED] = new Position(-1219.2,304.8);
+        shippingHubDepositApproach[BLUE] = new Position(-1219.2,-304.8);
 
-        shippingHubDeposit[RED] = new Position(-150,150);
-        shippingHubDeposit[BLUE] = new Position(-150,-150);
+        shippingHubDeposit[RED] = new Position(-1079.6,304.8);
+        shippingHubDeposit[BLUE] = new Position(-1079.6,-304.8);
 
         // INIT Camera
         /*initVuforia();
@@ -353,21 +353,32 @@ public class AutoOp extends OpMode {
                 case PRELOAD:
                     switch (subState) {
                         case 0:
-                            robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], true); //check if outtake is on the back
+                            if(STARTING_SIDE == BOTTOM){
+                                robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], true); //check if outtake is on the back
+                            } else {
+                                robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], true);
+                            }
+
                             if (!robot.driveToTargetInProgress()) {
                                 subState++;
                             }
                             break;
                         case 1:
-                            robot.driveToTarget(shippingHubPosition[STARTING_ALLIANCE], true);
-                            if (!robot.driveToTargetInProgress()) {
+                            robot.drivetrain.operate(0,0);
+                            robot.outtake.operateWithoutGamepad(scanLevel);
+                            if(!robot.outtake.slidingInProgress) {
                                 subState++;
                             }
                             break;
                         case 2:
-                            robot.drivetrain.operate(0,0);
-                            robot.outtake.operateWithoutGamepad(scanLevel);
-                            if(!robot.outtake.slidingInProgress) {
+                            if(STARTING_SIDE == BOTTOM) {
+                                robot.driveToTarget(shippingHubPosition[STARTING_ALLIANCE], true);
+                            } else {
+                                robot.driveToTarget(shippingHubDeposit[STARTING_ALLIANCE], true);
+
+                            }
+
+                            if (!robot.driveToTargetInProgress()) {
                                 subState++;
                             }
                             break;
@@ -378,7 +389,12 @@ public class AutoOp extends OpMode {
                             }
                             break;
                         case 4:
-                            robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], false);
+                            if(STARTING_SIDE == BOTTOM){
+                                robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], false);
+
+                            } else {
+                                robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], false);
+                            }
                             if(!robot.driveToTargetInProgress()){
                                 subState++;
                             }
@@ -386,14 +402,16 @@ public class AutoOp extends OpMode {
                         case 5:
                             robot.drivetrain.operate(0,0);
                             robot.outtake.operateWithoutGamepad(0);
-                            if (!robot.outtake.slidingInProgress){
+                            if (!robot.outtake.slidingInProgress && stateEnabled[WAREHOUSE]){
                                 advanceState();
+                            } else if (!robot.outtake.slidingInProgress) {
+                                subState++;
                             }
                             break;
                         case 6:
-                            robot.driveToTarget(carouselApproach[STARTING_ALLIANCE],false);
+                            robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][BOTTOM],false);
                             if(!robot.driveToTargetInProgress()){
-                                subState++;
+                                advanceState();
                             }
                             break;
                     }
@@ -449,14 +467,19 @@ public class AutoOp extends OpMode {
                             }
                             break;
                         case 5:
-                            robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][TOP],true);
+                            robot.intake.disable();
+                            robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], false);
                             if(!robot.driveToTargetInProgress()){
                                 subState++;
                             }
                             break;
                         case 6:
-                            robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], false);
-                            if(!robot.driveToTargetInProgress()){
+                            //robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][TOP],true);
+                            //if(!robot.driveToTargetInProgress()){
+                            subState++;
+                            //}
+                            robot.outtake.operateWithoutGamepad(3);
+                            if(!robot.outtake.slidingInProgress){
                                 subState++;
                             }
                             break;
@@ -467,10 +490,7 @@ public class AutoOp extends OpMode {
                             }
                             break;
                         case 8:
-                            robot.outtake.operateWithoutGamepad(3);
-                            if(!robot.outtake.slidingInProgress){
-                                subState++;
-                            }
+                            subState++;
                             break;
                         case 9:
                             if(robot.outtake.autoDrop()){
