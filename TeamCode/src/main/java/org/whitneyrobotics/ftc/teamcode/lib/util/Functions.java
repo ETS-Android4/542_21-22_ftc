@@ -189,7 +189,6 @@ public class Functions {
         return output;
     }
 
-    public PathGenerator reversePathGenerator = new PathGenerator();
     public static SwervePath reversePath (SwervePath path){
 
         FollowerConstants outputFollowerConstants = path.getAllFollowerConstants();
@@ -205,5 +204,12 @@ public class Functions {
         SwervePath outputPath = generateSwervePath(outputSwervePositions, outputFollowerConstants, outputSwervePathGenConstants);
 
         return outputPath;
+    }
+
+    public static ArrayList<Position> instantiatePath(ArrayList<Position> path, Position... positions){
+        for(Position pos : positions){
+            path.add(pos);
+        }
+        return path;
     }
 }

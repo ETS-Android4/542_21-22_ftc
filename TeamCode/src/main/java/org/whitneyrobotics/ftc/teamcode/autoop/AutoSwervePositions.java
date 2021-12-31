@@ -4,6 +4,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.FollowerConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePathGenerationConstants;
+import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 
 import java.util.ArrayList;
 
@@ -158,15 +159,17 @@ public class AutoSwervePositions {
  public static SwervePath blueShippingHubToWarehouseSwervePath;
 
  public static void instantiatePaths(){
-  
+  redCarousel = Functions.instantiatePath(redCarousel,redCarousel1,redCarousel2,redCarousel3);
+  //blueCarousel = Functions.reversePath(blueCarousel);
+  redGapApproachToShippingHub = Functions.instantiatePath(redGapApproachToShippingHub,redGapApproachToShippingHub1,redGapApproachToShippingHub2,redGapApproachToShippingHub3,redGapApproachToShippingHub4);
+  redWarehouseToShippingHub = Functions.instantiatePath(redWarehouseToShippingHub,redWarehouseApproachToShippingHub1,redWarehouseApproachToShippingHub2,redWarehouseApproachToShippingHub3,redGapApproachToShippingHub4,redWarehouseApproachToShippingHub5,redWarehouseApproachToShippingHub6);
+  blueGapApproachToShippingHub = Functions.instantiatePath(blueGapApproachToShippingHub,blueGapApproachToShippingHub1,blueGapApproachToShippingHub2,blueGapApproachToShippingHub3,blueGapApproachToShippingHub4);
+  blueWarehouseToShippingHub = Functions.instantiatePath(blueWarehouseToShippingHub,blueWarehouseApproachToShippingHub1,blueWarehouseApproachToShippingHub2,blueWarehouseApproachToShippingHub3,blueWarehouseApproachToShippingHub4,blueWarehouseApproachToShippingHub4,blueWarehouseApproachToShippingHub5,blueWarehouseApproachToShippingHub6);
+  redShippingHubToGapApproach = Functions.reversePath(redGapApproachToShippingHub);
+  redShippingHubToWarehouse = Functions.reversePath(redWarehouseToShippingHub);
+  blueShippingHubToGapApproach = Functions.reversePath(blueGapApproachToShippingHub);
+  blueShippingHubToWarehouse = Functions.reversePath(blueWarehouseToShippingHub);
  }
-
- public void instantiatePath(/*Empty ArrayList of Positions, Position Vararg*/){
-  for(double addend : position vararg){
-   //for each position in the vararg array, add it to the end of the arraylist
-  }
- }
-
 
  public static ArrayList<Position> getPath(ArrayList<Position> pathArray){
   instantiatePaths();
