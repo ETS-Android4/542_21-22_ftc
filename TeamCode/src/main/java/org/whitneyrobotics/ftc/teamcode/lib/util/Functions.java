@@ -188,8 +188,7 @@ public class Functions {
         }
         return output;
     }
-
-    public PathGenerator reversePathGenerator = new PathGenerator();
+    
     public static SwervePath reversePath (SwervePath path){
 
         FollowerConstants outputFollowerConstants = path.getAllFollowerConstants();
