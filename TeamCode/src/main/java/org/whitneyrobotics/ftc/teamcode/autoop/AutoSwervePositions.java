@@ -9,27 +9,22 @@ import java.util.ArrayList;
 
 import static org.whitneyrobotics.ftc.teamcode.lib.purepursuit.PathGenerator.generateSwervePath;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public class AutoSwervePositions {
 
- public final static Position crossIntoWarehouseRed1 = new Position(-1400,-150);
- public final static Position crossIntoWarehouseRed2 = new Position(-1647.6,-300);
- public final static Position crossIntoWarehouseRed3 = new Position(-1647.6,-900);
- public final static Position crossIntoWarehouseRed4 = new Position(-1450,-1100);
+ //carousel path for red top AND bottom
+ public final static Position redCarousel1 = new Position(-1219.2,-609.6);
+ public final static Position redCarousel2 = new Position(-1219.2,774.7);
+ public final static Position redCarousel3 = new Position(-1400.2,1329.2);
 
-public final static Position crossFromWarehouseRed1 = new Position(-1450,-1100);
-public final static Position crossFromWarehouseRed2 = new Position(-1647.6,-900);
-public final static Position crossFromWarehouseRed3 = new Position(-1647.6,-300);
-public final static Position crossFromWarehouseRed4 = new Position(-1400, -150);
-
- public final static Position crossIntoWarehouseBlue1 = new Position(-1400,-150);
- public final static Position crossIntoWarehouseBlue2 = new Position(-1647.6,-300);
- public final static Position crossIntoWarehouseBlue3 = new Position(-1647.6,-900);
- public final static Position crossIntoWarehouseBlue4 = new Position(-1450,-1100);
-
- public final static Position crossFromWarehouseBlue1 = new Position(-1450,-1100);
- public final static Position crossFromWarehouseBlue2 = new Position(-1647.6,-900);
- public final static Position crossFromWarehouseBlue3 = new Position(-1647.6,-300);
- public final static Position crossFromWarehouseBlue4 = new Position(-1400, -150);
+ /*
+ cursed
+ public final static Position blueCarousel1 = new Position(-1219.2,609.6);
+ public final static Position blueCarousel2 = new Position(-1219.2,-774.7);
+ public final static Position blueCarousel3 = new Position(-1400.2,-1329.2);
+ */
 
 //Start to Carousel
  public final  static Position startToCarousel1 = new Position(-900, -1800);
@@ -49,6 +44,8 @@ public final static Position crossFromWarehouseRed4 = new Position(-1400, -150);
  //Shipping Hub to Storage Unit
  public final  static Position shippingHubToStorageUnit1 = new Position(-300, -900);
  public final  static Position shippingHubToStorageUnit2 = new Position(-1500, -900);
+
+ ArrayList<Integer> sus = new ArrayList<Integer>();
 
  //swerve lookahead distances
  public static double startToCarouselLookaheadDistance = 350; // in mm
@@ -86,7 +83,7 @@ public final static Position crossFromWarehouseRed4 = new Position(-1400, -150);
  public static double crossIntoBlueWarehouseSwerveWeightSmooth = 0.7;
  public static double crossFromBlueWarehouseSwerveWeightSmooth = 0.7;
 
- //swerve turn speed
+ //swerve turn speed (1-5)
  public static double startToCarouselTurnSpeed = 3;
  public static double carouselToShippingHubTurnSpeed = 3;
  public static double shippingHubToWarehouseTurnSpeed = 3;

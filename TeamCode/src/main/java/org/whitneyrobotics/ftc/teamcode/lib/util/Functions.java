@@ -3,6 +3,8 @@ package org.whitneyrobotics.ftc.teamcode.lib.util;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 
+import java.util.ArrayList;
+
 /**
  * General purpose functions class
  */
@@ -170,5 +172,13 @@ public class Functions {
             double z = pos1.getX() * pos2.getY() - pos1.getY() * pos2.getX();
             return z;
         }
+    }
+
+    public static ArrayList<Position> reversePath(ArrayList<Position> path){
+        ArrayList<Position> output = new ArrayList<>();
+        for(Position pos : path){
+            output.add(0,pos);
+        }
+        return output;
     }
 }

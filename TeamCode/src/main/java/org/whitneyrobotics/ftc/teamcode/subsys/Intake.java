@@ -93,12 +93,14 @@ public class Intake {
     public boolean reject(double seconds){
         switch(rejectState){
             case 0:
+                autoIntakeInProgress = true;
                 rejectTimer.set(seconds);
                 intakeMotor.setPower(-INTAKE_MOTOR_POWER);
                 rejectState++;
                 break;
             case 1:
                 if(rejectTimer.isExpired()){
+                    autoIntakeInProgress = false;
                     intakeMotor.setPower(0);
                     rejectState = 0;
                     return true;
