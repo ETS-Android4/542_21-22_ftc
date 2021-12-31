@@ -188,7 +188,11 @@ public class Functions {
         }
         return output;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> master
     public static SwervePath reversePath (SwervePath path){
 
         FollowerConstants outputFollowerConstants = path.getAllFollowerConstants();
