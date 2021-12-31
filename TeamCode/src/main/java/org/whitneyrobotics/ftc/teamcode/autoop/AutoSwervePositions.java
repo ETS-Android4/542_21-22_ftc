@@ -26,141 +26,150 @@ public class AutoSwervePositions {
  public final static Position blueCarousel3 = new Position(-1400.2,-1329.2);
  */
 
-//Start to Carousel
- public final  static Position startToCarousel1 = new Position(-900, -1800);
- public final  static Position startToCarousel2 = new Position(-1800, -1800);
- //Carousel to Shipping Hub
- public final  static Position carouselToShippingHub1 = new Position(-1800, -1800);
- public final  static Position carouselToShippingHub2 = new Position(-300, -900);
- //Shipping Hub to Warehouse
- public final  static Position  shippingHubToWarehouse1 = new Position(-300, -900);
- public final  static Position  shippingHubToWarehouse2 = new Position(600, -1500);
-//Warehouse to Shipping Hub
- public final  static Position  warehouseToShippingHub1= new Position(600, -1500);
- public final  static Position  warehouseToShippingHub2 = new Position(-300, -900);
- //Shipping Hub to Warehouse (Park)
- public final  static Position shippingHubToWarehousePark1 = new Position(-300, -900);
- public final  static Position shippingHubToWarehousePark2 = new Position(900, -900);
- //Shipping Hub to Storage Unit
- public final  static Position shippingHubToStorageUnit1 = new Position(-300, -900);
- public final  static Position shippingHubToStorageUnit2 = new Position(-1500, -900);
+ public final static Position redGapApproachToShippingHub1 = new Position(-1703.7,-300);
+ public final static Position redGapApproachToShippingHub2 = new Position(-1625.7,0);
+ public final static Position redGapApproachToShippingHub3 = new Position(-1219.2,304.8);
+ public final static Position redGapApproachToShippingHub4 = new Position(-1079.6,304.8);
 
- ArrayList<Integer> sus = new ArrayList<Integer>();
+ public final static Position redWarehouseApproachToShippingHub1 = new Position(-1663.7,-1300);
+ public final static Position redWarehouseApproachToShippingHub2 = new Position(-1683.7,-900);
+ public final static Position redWarehouseApproachToShippingHub3 = new Position(-1703.7,-300);
+ public final static Position redWarehouseApproachToShippingHub4 = new Position(-1625.7,0);
+ public final static Position redWarehouseApproachToShippingHub5 = new Position(-1219.2,304.8);
+ public final static Position redWarehouseApproachToShippingHub6 = new Position(-1079.6,304.8);
+
+ public final static Position blueGapApproachToShippingHub1 = new Position(-1703.7,300);
+ public final static Position blueGapApproachToShippingHub2 = new Position(-1625.7,0);
+ public final static Position blueGapApproachToShippingHub3 = new Position(-1219.2,-304.8);
+ public final static Position blueGapApproachToShippingHub4 = new Position(-1079.6,-304.8);
+
+ public final static Position blueWarehouseApproachToShippingHub1 = new Position(-1663.7,1300);
+ public final static Position blueWarehouseApproachToShippingHub2 = new Position(-1683.7,900);
+ public final static Position blueWarehouseApproachToShippingHub3 = new Position(-1703.7,300);
+ public final static Position blueWarehouseApproachToShippingHub4 = new Position(-1625.7,0);
+ public final static Position blueWarehouseApproachToShippingHub5 = new Position(-1219.2,-304.8);
+ public final static Position blueWarehouseApproachToShippingHub6 = new Position(-1079.6,-304.8);
 
  //swerve lookahead distances
- public static double startToCarouselLookaheadDistance = 350; // in mm
- public static double carouselToShippingHubLookaheadDistance = 350;
- public static double shippingHubToWarehouseLookaheadDistance = 350;
- public static double warehouseToShippingHubLookaheadDistance = 350;
- public static double shippingHubToWarehouseParkLookaheadDistance = 350;
- public static double shippingHubToStorageUnitLookaheadDistance = 350;
- public static double crossIntoRedWarehouseLookaheadDistance = 350;
- public static double crossFromRedWarehouseLookaheadDistance = 350;
- public static double crossIntoBlueWarehouseLookaheadDistance = 350;
- public static double crossFromBlueWarehouseLookaheadDistance = 350;
+ public static double redCarouselLookaheadDistance = 100; // in mm
+ public static double blueCarouselLookaheadDistance = 100;
+ public static double redGapApproachToShippingHubLookaheadDistance = 100;
+ public static double redWarehouseToShippingHubLookaheadDistance = 100;
+ public static double blueGapApproachToShippingHubLookaheadDistance = 100;
+ public static double blueWarehouseToShippingHubLookaheadDistance = 100;
+ public static double redShippingHubToGapApproachLookaheadDistance = 100;
+ public static double redShippingHubToWarehouseLookaheadDistance = 100;
+ public static double blueShippingHubToGapApproachLookaheadDistance = 100;
+ public static double blueShippingHubToWarehouseLookaheadDistance = 100;
 
  //swerve spacing
- public static double startToCarouselSwerveSpacing =80;
- public static double  carouselToShippingHubSwerveSpacing =80;
- public static double shippingHubToWarehouseSwerveSpacing =80;
- public static double warehouseToShippingHubSwerveSpacing =80;
- public static double shippingHubToWarehouseParkSwerveSpacing =80;
- public static double shippingHubToStorageUnitSwerveSpacing =80;
- public static double crossIntoRedWarehouseServeSpacing = 20;
- public static double crossFromRedWarehouseSwerveSpacing = 20;
- public static double crossIntoBlueWarehouseSwerveSpacing = 20;
- public static double crossFromBlueWarehouseSwerveSpacing = 20;
+ public static double redCarouselSpacing = 20; // in mm
+ public static double blueCarouselSpacing = 20;
+ public static double redGapApproachToShippingHubSpacing = 20;
+ public static double redWarehouseToShippingHubSpacing = 20;
+ public static double blueGapApproachToShippingHubSpacing = 20;
+ public static double blueWarehouseToShippingHubSpacing = 20;
+ public static double redShippingHubToGapApproachSpacing = 20;
+ public static double redShippingHubToWarehouseSpacing = 20;
+ public static double blueShippingHubToGapApproachSpacing = 20;
+ public static double blueShippingHubToWarehouseSpacing = 20;
 
  //Weight Smooth
- public static double startToCarouselWeightSmooth = 0.5;
- public static double carouselToShippingHubWeightSmooth = 0.5;
- public static double shippingHubToWarehouseWeightSmooth = 0.5;
- public static double warehouseToShippingHubWeightSmooth = 0.5;
- public static double shippingHubToWarehouseParkWeightSmooth = 0.5;
- public static double shippingHubToStorageUnitWeightSmooth = 0.5;
- public static double crossIntoRedWarehouseSwerveWeightSmooth = 0.7;
- public static double crossFromRedWarehouseSwerveWeightSmooth = 0.7;
- public static double crossIntoBlueWarehouseSwerveWeightSmooth = 0.7;
- public static double crossFromBlueWarehouseSwerveWeightSmooth = 0.7;
+ public static double redCarouselWeightSmooth = 0.5; // in mm
+ public static double blueCarouselWeightSmooth = 0.5;
+ public static double redGapApproachToShippingHubWeightSmooth = 0.7;
+ public static double redWarehouseToShippingHubWeightSmooth = 0.7;
+ public static double blueGapApproachToShippingHubWeightSmooth = 0.7;
+ public static double blueWarehouseToShippingHubWeightSmooth = 0.7;
+ public static double redShippingHubToGapApproachWeightSmooth = 0.7;
+ public static double redShippingHubToWarehouseWeightSmooth = 0.7;
+ public static double blueShippingHubToGapApproachWeightSmooth = 0.7;
+ public static double blueShippingHubToWarehouseWeightSmooth = 0.7;
 
  //swerve turn speed (1-5)
- public static double startToCarouselTurnSpeed = 3;
- public static double carouselToShippingHubTurnSpeed = 3;
- public static double shippingHubToWarehouseTurnSpeed = 3;
- public static double warehouseToShippingHubTurnSpeed = 3;
- public static double shippingHubToWarehouseParkTurnSpeed = 3;
- public static double shippingHubToStorageUnitTurnSpeed = 3;
- public static double crossIntoRedWarehouseTurnSpeed = 1.5;
- public static double crossFromRedWarehouseTurnSpeed = 1.5;
- public static double crossIntoBlueWarehouseTurnSpeed = 1.5;
- public static double crossFromBlueWarehouseTurnSpeed = 1.5;
+ public static double redCarouselTurnSpeed = 2.5; // in mm
+ public static double blueCarouselTurnSpeed = 2.5;
+ public static double redGapApproachToShippingHubTurnSpeed = 2.5;
+ public static double redWarehouseToShippingHubTurnSpeed = 2.5;
+ public static double blueGapApproachToShippingHubTurnSpeed = 2.5;
+ public static double blueWarehouseToShippingHubTurnSpeed = 2.5;
+ public static double redShippingHubToGapApproachTurnSpeed = 2.5;
+ public static double redShippingHubToWarehouseTurnSpeed = 2.5;
+ public static double blueShippingHubToGapApproachTurnSpeed = 2.5;
+ public static double blueShippingHubToWarehouseTurnSpeed = 2.5;
 
 
  //swerve max velocity
- public static double startToCarouselMaxVelocity = 750;
- public static double carouselToShippingHubMaxVelocity = 750;
- public static double shippingHubToWarehouseMaxVelocity = 750;
- public static double warehouseToShippingHubMaxVelocity = 750;
- public static double shippingHubToWarehouseParkMaxVelocity = 750;
- public static double shippingHubToStorageUnitMaxVelocity = 750;
- public static double crossIntoRedWarehouseMaxVelocity = 400;
- public static double crossFromRedWarehouseMaxVelocity = 400;
- public static double crossIntoBlueWarehouseMaxVelocity = 400;
- public static double crossFromBlueWarehouseMaxVelocity = 400;
+ public static double redCarouselMaxVelocity = 400; // in mm
+ public static double blueCarouselMaxVelocity = 400;
+ public static double redGapApproachToShippingHubMaxVelocity = 400;
+ public static double redWarehouseToShippingHubMaxVelocity = 400;
+ public static double blueGapApproachToShippingHubMaxVelocity = 400;
+ public static double blueWarehouseToShippingHubMaxVelocity = 400;
+ public static double redShippingHubToGapApproachMaxVelocity = 400;
+ public static double redShippingHubToWarehouseMaxVelocity = 400;
+ public static double blueShippingHubToGapApproachMaxVelocity = 400;
+ public static double blueShippingHubToWarehouseMaxVelocity = 400;
 
  //ArrayLists to call in getPath
- public static ArrayList<Position> startToCarouselPath = new ArrayList<Position>();
- public static ArrayList<Position> carouselToShippingHubPath = new ArrayList<Position>();
- public static ArrayList<Position> shippingHubToWarehousePath = new ArrayList<Position>();
- public static ArrayList<Position> warehouseToShippingHubPath = new ArrayList<Position>();
- public static ArrayList<Position> shippingHubToWarehouseParkPath = new ArrayList<Position>();
- public static ArrayList<Position> shippingHubToStorageUnitPath = new ArrayList<Position>();
- public static ArrayList<Position> crossIntoRedWarehousePath = new ArrayList<>();
- public static ArrayList<Position> crossFromRedWarehousePath = new ArrayList<>();
- public static ArrayList<Position> crossIntoBlueWarehousePath = new ArrayList<>();
- public static ArrayList<Position> crossFromBlueWarehousePath = new ArrayList<>();
+ public static ArrayList<Position> redCarousel = new ArrayList<Position>();
+ public static ArrayList<Position> blueCarousel = new ArrayList<Position>();
+ public static ArrayList<Position> redGapApproachToShippingHub = new ArrayList<Position>();
+ public static ArrayList<Position> redWarehouseToShippingHub = new ArrayList<Position>();
+ public static ArrayList<Position> blueGapApproachToShippingHub = new ArrayList<Position>();
+ public static ArrayList<Position> blueWarehouseToShippingHub = new ArrayList<Position>();
+ public static ArrayList<Position> redShippingHubToGapApproach = new ArrayList<Position>();
+ public static ArrayList<Position> redShippingHubToWarehouse = new ArrayList<Position>();
+ public static ArrayList<Position> blueShippingHubToGapApproach = new ArrayList<Position>();
+ public static ArrayList<Position> blueShippingHubToWarehouse = new ArrayList<Position>();
 
- //Initialioze Follower Constants
- public static FollowerConstants startToCarouselFollowerConstants = new FollowerConstants(startToCarouselLookaheadDistance, false);
- public static FollowerConstants carouselToShippingHubFollowerConstants = new FollowerConstants(carouselToShippingHubLookaheadDistance, false);
- public static FollowerConstants shippingHubToWarehouseFollowerConstants = new FollowerConstants(shippingHubToWarehouseLookaheadDistance, false);
- public static FollowerConstants warehouseToShippingHubFollowerConstants = new FollowerConstants(warehouseToShippingHubLookaheadDistance, false);
- public static FollowerConstants shippingHubToWarehouseParkFollowerConstants = new FollowerConstants(shippingHubToWarehouseParkLookaheadDistance, false);
- public static FollowerConstants shippingHubToStorageUnitFollowerConstants = new FollowerConstants(shippingHubToStorageUnitLookaheadDistance, false);
- public static FollowerConstants crossIntoRedWarehouseFollowerConstants = new FollowerConstants(crossIntoRedWarehouseLookaheadDistance,false);
- public static FollowerConstants crossFromRedWarehouseFollowerConstants = new FollowerConstants(crossIntoRedWarehouseLookaheadDistance,true);
- public static FollowerConstants crossIntoBlueWarehouseFollowerConstants = new FollowerConstants(crossIntoBlueWarehouseLookaheadDistance,false);
- public static FollowerConstants crossFromBlueWarehouseFollowerConstants = new FollowerConstants(crossFromBlueWarehouseLookaheadDistance,true);
+ //Initialize Follower Constants
+ public static FollowerConstants redCarouselFollowerConstants = new FollowerConstants(redCarouselLookaheadDistance,true);
+ public static FollowerConstants blueCarouselFollowerConstants = new FollowerConstants(blueCarouselLookaheadDistance,true);
+ public static FollowerConstants redGapApproachToShippingHubFollowerConstants = new FollowerConstants(redGapApproachToShippingHubLookaheadDistance,true);
+ public static FollowerConstants redWarehouseToShippingHubFollowerConstants = new FollowerConstants(redWarehouseToShippingHubLookaheadDistance,true);
+ public static FollowerConstants blueGapApproachToShippingHubFollowerConstants = new FollowerConstants(blueGapApproachToShippingHubLookaheadDistance,true);
+ public static FollowerConstants blueWarehouseToShippingHubFollowerConstants = new FollowerConstants(blueWarehouseToShippingHubLookaheadDistance,true);
+ public static FollowerConstants redShippingHubToGapApproachFollowerConstants = new FollowerConstants(redShippingHubToGapApproachLookaheadDistance,false);
+ public static FollowerConstants redShippingHubToWarehouseFollowerConstants = new FollowerConstants(redShippingHubToWarehouseLookaheadDistance,false);
+ public static FollowerConstants blueShippingHubToGapApproachFollowerConstants = new FollowerConstants(blueShippingHubToGapApproachLookaheadDistance,false);
+ public static FollowerConstants blueShippingHubToWarehouseFollowerConstants = new FollowerConstants(blueShippingHubToWarehouseLookaheadDistance,false);
 
- public static SwervePathGenerationConstants crossIntoRedWarehousePathGenerationConstants = new SwervePathGenerationConstants(AutoSwervePositions.crossIntoRedWarehouseServeSpacing,AutoSwervePositions.crossIntoRedWarehouseSwerveWeightSmooth,AutoSwervePositions.crossIntoRedWarehouseTurnSpeed,AutoSwervePositions.crossIntoRedWarehouseMaxVelocity);
- public static SwervePathGenerationConstants crossFromRedWarehousePathGenerationConstants = new SwervePathGenerationConstants(crossFromRedWarehouseSwerveSpacing,crossFromRedWarehouseSwerveWeightSmooth,crossFromRedWarehouseTurnSpeed,crossFromRedWarehouseMaxVelocity);
- public static SwervePathGenerationConstants crossIntoBlueWarehousePathGenerationConstants = new SwervePathGenerationConstants(crossIntoBlueWarehouseSwerveSpacing,crossIntoBlueWarehouseSwerveWeightSmooth,crossIntoBlueWarehouseTurnSpeed,crossIntoBlueWarehouseMaxVelocity);
- public static SwervePathGenerationConstants crossFromBlueWarehousePathGenerationConstants = new SwervePathGenerationConstants(crossFromBlueWarehouseSwerveSpacing,crossFromBlueWarehouseSwerveWeightSmooth,crossFromBlueWarehouseTurnSpeed,crossFromBlueWarehouseMaxVelocity);
- public static SwervePath crossIntoRedWarehouse;
- public static SwervePath crossFromRedWarehouse;
- public static SwervePath crossIntoBlueWarehouse;
- public static SwervePath crossFromBlueWarehouse;
+ public static SwervePathGenerationConstants redCarouselSwervePathGenerationConstants = new SwervePathGenerationConstants(redCarouselSpacing,redCarouselWeightSmooth,redCarouselTurnSpeed,redCarouselMaxVelocity);
+ public static SwervePathGenerationConstants blueCarouselSwervePathGenerationConstants = new SwervePathGenerationConstants(blueCarouselSpacing,blueCarouselWeightSmooth,blueCarouselTurnSpeed,blueCarouselMaxVelocity);
+ public static SwervePathGenerationConstants redGapApproachToShippingHubSwervePathGenerationConstants = new SwervePathGenerationConstants(redGapApproachToShippingHubSpacing,redGapApproachToShippingHubWeightSmooth,redGapApproachToShippingHubTurnSpeed,redGapApproachToShippingHubMaxVelocity);
+ public static SwervePathGenerationConstants redWarehouseToShippingHubSwervePathGenerationConstants = new SwervePathGenerationConstants(redWarehouseToShippingHubSpacing,redWarehouseToShippingHubWeightSmooth,redWarehouseToShippingHubTurnSpeed,redWarehouseToShippingHubMaxVelocity);
+ public static SwervePathGenerationConstants blueGapApproachToShippingHubSwervePathGenerationConstants = new SwervePathGenerationConstants(blueGapApproachToShippingHubSpacing,blueGapApproachToShippingHubWeightSmooth,blueGapApproachToShippingHubTurnSpeed,blueGapApproachToShippingHubMaxVelocity);
+ public static SwervePathGenerationConstants blueWarehouseToShippingHubSwervePathGenerationConstants = new SwervePathGenerationConstants(blueWarehouseToShippingHubSpacing,blueWarehouseToShippingHubWeightSmooth,blueWarehouseToShippingHubTurnSpeed,blueWarehouseToShippingHubMaxVelocity);
+ public static SwervePathGenerationConstants redShippingHubToGapApproachSwervePathGenerationConstants = new SwervePathGenerationConstants(redShippingHubToGapApproachSpacing,redShippingHubToGapApproachWeightSmooth,redShippingHubToWarehouseTurnSpeed,redShippingHubToGapApproachMaxVelocity);
+ public static SwervePathGenerationConstants redShippingHubToWarehouseSwervePathGenerationConstants = new SwervePathGenerationConstants(redShippingHubToWarehouseSpacing,redShippingHubToWarehouseWeightSmooth,redShippingHubToWarehouseTurnSpeed,redShippingHubToWarehouseMaxVelocity);
+ public static SwervePathGenerationConstants blueShippingHubToGapApproachSwervePathGenerationConstants = new SwervePathGenerationConstants(blueShippingHubToWarehouseSpacing,blueShippingHubToWarehouseWeightSmooth,blueShippingHubToWarehouseTurnSpeed,blueShippingHubToWarehouseMaxVelocity);
+ public static SwervePathGenerationConstants blueShippingHubToWarehouseSwervePathGenerationConstants = new SwervePathGenerationConstants(blueShippingHubToWarehouseSpacing,blueShippingHubToWarehouseWeightSmooth,blueShippingHubToWarehouseTurnSpeed,blueShippingHubToWarehouseMaxVelocity);
+
+ public static SwervePath redCarouselSwervePath;
+ public static SwervePath blueCarouselSwervePath;
+ public static SwervePath redGapApproachToShippingHubSwervePath;
+ public static SwervePath redWarehouseToShippingHubSwervePath;
+ public static SwervePath blueGapApproachToShippingHubSwervePath;
+ public static SwervePath blueWarehouseToShippingHubSwervePath;
+ public static SwervePath redShippingHubToGapApproachSwervePath;
+ public static SwervePath redShippingHubToWarehouseSwervePath;
+ public static SwervePath blueShippingHubToGapApproachSwervePath;
+ public static SwervePath blueShippingHubToWarehouseSwervePath;
+
+ public static void instantiatePaths(){
+  
+ }
+
+ public void instantiatePath(/*Empty ArrayList of Positions, Position Vararg*/){
+  for(double addend : position vararg){
+   //for each position in the vararg array, add it to the end of the arraylist
+  }
+ }
+
 
  public static ArrayList<Position> getPath(ArrayList<Position> pathArray){
-  crossIntoRedWarehousePath.add(crossIntoWarehouseRed1);
-  crossIntoRedWarehousePath.add(crossIntoWarehouseRed2);
-  crossIntoRedWarehousePath.add(crossIntoWarehouseRed3);
-  crossIntoRedWarehousePath.add(crossIntoWarehouseRed4);
-
-  crossFromRedWarehousePath.add(crossFromWarehouseRed1);
-  crossIntoRedWarehousePath.add(crossFromWarehouseRed2);
-  crossIntoRedWarehousePath.add(crossFromWarehouseRed3);
-  crossIntoRedWarehousePath.add(crossFromWarehouseRed4);
-
-  crossIntoBlueWarehousePath.add(crossIntoWarehouseBlue1);
-  crossIntoBlueWarehousePath.add(crossIntoWarehouseBlue2);
-  crossIntoBlueWarehousePath.add(crossIntoWarehouseBlue3);
-  crossIntoBlueWarehousePath.add(crossIntoWarehouseBlue4);
-
-  crossFromBlueWarehousePath.add(crossFromWarehouseBlue1);
-  crossIntoBlueWarehousePath.add(crossFromWarehouseBlue2);
-  crossIntoBlueWarehousePath.add(crossFromWarehouseBlue3);
-  crossIntoBlueWarehousePath.add(crossFromWarehouseBlue4);
+  instantiatePaths();
   return pathArray;
  }
 
