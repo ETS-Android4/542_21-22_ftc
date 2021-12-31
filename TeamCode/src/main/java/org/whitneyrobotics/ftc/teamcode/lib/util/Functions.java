@@ -1,7 +1,14 @@
 package org.whitneyrobotics.ftc.teamcode.lib.util;
 
+import static org.whitneyrobotics.ftc.teamcode.lib.purepursuit.PathGenerator.generateSwervePath;
+
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
+import org.whitneyrobotics.ftc.teamcode.lib.geometry.SwerveWaypoint;
+import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.FollowerConstants;
+import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.PathGenerator;
+import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePath;
+import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePathGenerationConstants;
 
 import java.util.ArrayList;
 
@@ -180,5 +187,23 @@ public class Functions {
             output.add(0,pos);
         }
         return output;
+    }
+
+    public PathGenerator reversePathGenerator = new PathGenerator();
+    public static SwervePath reversePath (SwervePath path){
+
+        FollowerConstants outputFollowerConstants = path.getAllFollowerConstants();
+
+        SwervePathGenerationConstants outputSwervePathGenConstants = path.swervePathGenConsts;
+
+        ArrayList<Position> outputSwervePositions = new ArrayList<Position>();
+
+        for (SwerveWaypoint waypoint : path.getWaypoints()){
+            outputSwervePositions.add(0, waypoint.getPosition());
+        }
+
+        SwervePath outputPath = generateSwervePath(outputSwervePositions, outputFollowerConstants, outputSwervePathGenConstants);
+
+        return outputPath;
     }
 }

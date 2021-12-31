@@ -15,6 +15,12 @@ public class SwervePath {
         this.followerConstants = followerConstants;
     }
 
+    public SwervePath(ArrayList<SwerveWaypoint> waypoints, FollowerConstants followerConstants, SwervePathGenerationConstants swervePathGenConsts){
+        this.waypoints = waypoints;
+        this.followerConstants = followerConstants;
+        this.swervePathGenConsts = swervePathGenConsts;
+    }
+
     public ArrayList<SwerveWaypoint> getWaypoints() {
         return waypoints;
     }
@@ -26,6 +32,8 @@ public class SwervePath {
     public double getFollowerConstants() {
         return followerConstants.getLookaheadDistance();
     }
+
+    public FollowerConstants getAllFollowerConstants() { return followerConstants; }
 
     public Position getPositionAtIndex(int index){
         return waypoints.get(index).getPosition();
@@ -42,5 +50,8 @@ public class SwervePath {
     public boolean backwards(){
         return followerConstants.backwards();
     }
+
+    // only used when reversing SwervePath
+    public SwervePathGenerationConstants swervePathGenConsts;
 
 }
