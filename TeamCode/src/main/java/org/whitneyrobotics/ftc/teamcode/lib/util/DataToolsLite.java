@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
+import java.util.HashMap;
+
 public class DataToolsLite {
 
     public enum ObjectTypes{
@@ -14,7 +16,7 @@ public class DataToolsLite {
         private final int value;
         ObjectTypes(int value){this.value = value;}
     }
-
+    //creates a text file with key/value format 0=true,1=false,2=3,3=6192,
     public static void encode(String fileName, Object... unlabeledData){
         String content = "";
         for(int i = 0; i< unlabeledData.length; i++){
@@ -25,8 +27,8 @@ public class DataToolsLite {
 
     public static void encode(String fileName, DataTools.Data data){
         String content = "";
-        for(Object i : data.keySet()){
-            content += (String.format("%s=%s,",i.toString(), data.get(i).toString()));
+        for(Object key : data.keySet()){
+            content += (String.format("%s=%s,",key.toString(), data.get(key).toString()));
         }
         ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile(fileName),content);
     }
@@ -75,4 +77,6 @@ public class DataToolsLite {
         }
         return result;
     }
+
+    //convertBackToObjects(new DataToolsLite.ObjectTypes[] {DatToolsLite.BOOLEAN, DataToolsLite.STRING}, new String[] {"false", "hi"});
 }

@@ -29,7 +29,7 @@ public class Drivetrain {
     private Toggler orientationSwitch = new Toggler(2);
     private Toggler fieldCentricSwitch = new Toggler(2);
 
-    private static final double TRACK_WIDTH = 360.6;
+    private static final double TRACK_WIDTH = 280.5500000;
 
     //TODO: measure actual wheel base
     private static final double WHEEL_BASE = 450;

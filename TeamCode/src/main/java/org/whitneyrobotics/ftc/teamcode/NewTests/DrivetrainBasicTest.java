@@ -42,7 +42,7 @@ public class DrivetrainBasicTest extends OpMode {
     public void init(){
         angleSelector = new Toggler(rotateTargets.length);
         dashboard = FtcDashboard.getInstance();
-        dashboardTelemetry = dashboard.getTelemetry();;
+        dashboardTelemetry = dashboard.getTelemetry();
         dashboardTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         dashboard.sendTelemetryPacket(packet);

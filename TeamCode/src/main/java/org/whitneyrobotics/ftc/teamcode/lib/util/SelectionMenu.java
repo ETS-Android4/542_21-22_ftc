@@ -6,21 +6,20 @@ import java.util.Arrays;
 public class SelectionMenu {
     private String name = "Selection Menu";
     private String instructions;
-    public ArrayList<Prompt> prompts = null;
+    public ArrayList<Prompt> prompts = new ArrayList<>();
     private Toggler promptSelector;
     private boolean initialized = false;
-    private Object[] lastRecordedArray = new Object[]{};
+    private Object[] lastRecordedArray = new Object[]{}; //useful for saving
 
     public SelectionMenu() {
+
     }
 
     public SelectionMenu(String name) {
-        prompts = new ArrayList<Prompt>();
         this.name = name;
     }
 
     public SelectionMenu(String name, Prompt... prompts) {
-        this.prompts = new ArrayList<Prompt>();
         this.name = name;
         for (Prompt prompt : prompts) {
             this.prompts.add(prompt);
@@ -66,6 +65,13 @@ public class SelectionMenu {
         }
         return formatted;
     }
+
+    /*
+    * Autonomous Configuration
+    * (Instructions here)
+    * [Prompt 1 of 6]: Park State
+    * 0: ON <-
+    * 1: OFF*/
 
     public Object[] getOutputs() {
         Object[] outputs = new Object[prompts.size()];
@@ -214,8 +220,9 @@ public class SelectionMenu {
         public Slider init() {super.selectionIterator = new Toggler(maxExclusive-minInclusive); return this;}
 
         @Override
-        public String getPrintableOutput(){return "(" + minInclusive + "-" + (maxExclusive-1) + ") " + minInclusive+super.selectionIterator.currentState() + "\n";}
-
+        public String getPrintableOutput(){return "(" + minInclusive + "-" + (maxExclusive-1) + ") " + (minInclusive+super.selectionIterator.currentState()) + "\n";}
+        //(1-5)
+        //Slider("Review your experience",1,6)
         @Override
         public <Value> Value getValueOfActive(){return (Value) new Integer(minInclusive+super.selectionIterator.currentState());}
 
