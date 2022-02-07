@@ -7,11 +7,11 @@ import org.whitneyrobotics.ftc.teamcode.lib.control.ControlConstants;
 @Config
 public class PurePursuitRobotConstants {
 
-    public final static double MAX_ACCELERATION = 800.0;
+    public final static double MAX_ACCELERATION = 1500;
 
-    public  static double SWERVE_KP = 0.0001;
-    public  static double SWERVE_KV = 0.0006338;
-    public  static double SWERVE_KA = 0.0012;
+    public  static double SWERVE_KP = 0;
+    public  static double SWERVE_KV = 1/1100;
+    public  static double SWERVE_KA = 0;//.00001;
 
     public final static double STRAFE_KP = 0, STRAFE_KV = 0, STRAFE_KA = 0;
 

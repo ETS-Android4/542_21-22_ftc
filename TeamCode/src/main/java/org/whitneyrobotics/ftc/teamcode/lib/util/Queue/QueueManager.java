@@ -11,10 +11,12 @@ import java.util.LinkedList;
 public class QueueManager {
     public static LinkedList<QueueItem> queue = new LinkedList<>();
     public static void add(QueueItem task){
-        if(queue.size() > 0){
+        if(queue.size() > 1){
             if(queue.get(queue.size()-1) != task){
-                queue.add(task);
+                queue.add(task); //prevent duplicate tasks from appearing in a row, adding processing redundancy
             }
+        } else {
+            queue.add(task);
         }
     }
 
@@ -40,7 +42,7 @@ public class QueueManager {
 
     public static void cleanQueue(){
         for(QueueItem task : queue){
-            if(!task.isAlive()){
+            if(task.isProcessed()){
                 queue.remove(task);
             }
         }
@@ -49,7 +51,12 @@ public class QueueManager {
     public static int queueSize(){
         return queue.size();
     }
-
+    public static QueueItem taskCurrentProcessing() {
+        if(!queueEmpty()){
+            return queue.get(0);
+        }
+        return null;
+    }
     public static boolean queueEmpty(){
         return queue.isEmpty();
     }

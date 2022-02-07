@@ -37,20 +37,24 @@ public class QueueItem {
     public boolean process(){
         switch(processMode){
             case LINEAR:
-                processed = (boolean)exitCondition.get();
                 if(!processed){
                     action.invoke();
                 }
+                processed = (boolean)exitCondition.get();
                 break;
             case ITERATIVE:
-                while(!processed){
-                    processed = (boolean)exitCondition.get();
+                do {
                     action.invoke();
-                }
+                    processed = (boolean)exitCondition.get();
+                } while(!processed);
                 break;
+            default:
+                throw new IllegalArgumentException("Specified Process Mode does not exist for QueueItem.ProcessMode enum");
         }
         return processed;
     }
 
     public boolean isAlive(){return !processed;}
+
+    public boolean isProcessed(){return processed;}
 }

@@ -43,7 +43,7 @@ public class Outtake {
         CLOSE(1),
         OPEN(0.6);
         private double position;
-        private GatePositions(double position){
+        GatePositions(double position){
             this.position = position;
         }
         public double getPosition(){return this.position;}
@@ -53,7 +53,7 @@ public class Outtake {
         LEVEL1(0.0),
         LEVEL1_5(1200),
         LEVEL2(1683.0),
-        LEVEL3(2900);
+        LEVEL3(3000);
         private double encoderPos;
         private MotorLevels(double encoderPos){
             this.encoderPos = encoderPos;

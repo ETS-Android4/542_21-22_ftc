@@ -206,9 +206,10 @@ public class Functions {
         return outputPath;
     }
 
-    public static ArrayList<Position> instantiatePath(ArrayList<Position> path, Position... positions){
-        for(Position pos : positions){
-            path.add(pos);
+    public static ArrayList<Position> instantiatePath(Position... positions){
+        ArrayList<Position> path = new ArrayList<>();
+        for(int i = 0; i<positions.length; i++){ //just learned that varargs are not collections ;-;
+            path.add(positions[i]);
         }
         return path;
     }

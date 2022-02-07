@@ -40,6 +40,7 @@ public class WHSTeleOp extends OpMode {
         String[] data = DataToolsLite.decode("autoConfig.txt");
         String[] teleData = DataToolsLite.decode("teleOpConfig.txt");
         try {
+            robot.setInitialCoordinate(new Coordinate(0,0,Double.parseDouble(DataToolsLite.decode("heading.txt")[0])));
             robot.carousel.setAlliance((int)Integer.parseInt(data[0],10));
             autoEndTele = ((boolean)Boolean.parseBoolean(teleData[0]));
             teleOpTime += ((boolean)Boolean.parseBoolean((teleData[1])) ? 30.0 : 0.0);

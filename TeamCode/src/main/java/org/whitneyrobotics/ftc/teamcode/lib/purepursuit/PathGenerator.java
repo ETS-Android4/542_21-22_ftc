@@ -15,6 +15,9 @@ import java.util.ArrayList;
 public class PathGenerator {
 
     public static SwervePath generateSwervePath(ArrayList<Position> targetPositions, FollowerConstants lookaheadDistance, SwervePathGenerationConstants constants) {
+        if(targetPositions.size() < 1){
+            throw new IllegalArgumentException("Must have at least 1 point to create a swerve path");
+        }
         ArrayList<Position> positionList = generatePosPath(targetPositions, constants.getSpacing(), constants.getWeightSmooth());
         double[] targetTangentialVelocities = calculateTargetTangentialVelocities(constants.getTurnSpeed(), constants.getPathMaxVelocity(), PurePursuitRobotConstants.MAX_ACCELERATION, positionList);
         ArrayList<SwerveWaypoint> waypoints = new ArrayList<SwerveWaypoint>();

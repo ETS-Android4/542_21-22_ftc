@@ -430,5 +430,4 @@ public class WHSRobotImpl {
     public String outtakeLevel(){
         return outtakeLabels[levelSelector.currentState()];
     }
-
 }

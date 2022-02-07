@@ -15,6 +15,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePat
 import org.whitneyrobotics.ftc.teamcode.lib.purepursuit.swervetotarget.SwervePathGenerationConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
+import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImplDrivetrainOnly;
 
 import static org.whitneyrobotics.ftc.teamcode.lib.purepursuit.PathGenerator.generateSwervePath;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 
 @TeleOp(name="Swerve Tuning", group="New Tests")
 public class SwerveTuning extends OpMode {
-    private WHSRobotImplDrivetrainOnly robot;
+    private WHSRobotImpl robot;
     private FtcDashboard dashboard;
     private Telemetry dashboardTelemetry;
     private TelemetryPacket packet = new TelemetryPacket();
@@ -32,27 +33,27 @@ public class SwerveTuning extends OpMode {
     static SwervePath[] paths = {path1, path2};
     private String[] labels = {"Path 1", "Path2"};
     private Toggler pathSelector;
-    private boolean squidGame = false;
+    private boolean squidGame = true;
     private int swerveState = 0;
 
     @Override
     public void init() {
-        robot = new WHSRobotImplDrivetrainOnly(hardwareMap);
+        robot = new WHSRobotImpl(hardwareMap);
         robot.drivetrain.resetEncoders();
         robot.drivetrain.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.setInitialCoordinate(new Coordinate(0,0,0));
         ArrayList<Position> path1Positions = new ArrayList<>();
-        path1Positions = Functions.instantiatePath(path1Positions, new Position(0,0),new Position(1000,0));
+        path1Positions = Functions.instantiatePath(new Position(0,0),new Position(1000,0));
 
         FollowerConstants path1FollowerConstants = new FollowerConstants(250, false);
-        SwervePathGenerationConstants path1PathGenerationConstants = new SwervePathGenerationConstants(12,0.5,2.5,250);
+        SwervePathGenerationConstants path1PathGenerationConstants = new SwervePathGenerationConstants(12,0.5,2.5,500);
         path1 = generateSwervePath(path1Positions,path1FollowerConstants,path1PathGenerationConstants);
 
         ArrayList<Position> path2Positions = new ArrayList<>();
-        path2Positions = Functions.instantiatePath(path2Positions, new Position(0,0),new Position(500,0),new Position(500,500),new Position(800,0));
+        path2Positions = Functions.instantiatePath(new Position(0,0),new Position(500,0),new Position(500,500),new Position(800,0));
 
         FollowerConstants path2FollowerConstants = new FollowerConstants(250, false);
-        SwervePathGenerationConstants path2PathGenerationConstants = new SwervePathGenerationConstants(12,0.7,1,250);
+        SwervePathGenerationConstants path2PathGenerationConstants = new SwervePathGenerationConstants(12,0.7,1,500);
         path2 = generateSwervePath(path2Positions,path2FollowerConstants,path2PathGenerationConstants);
 
         paths = new SwervePath[]{path1, path2};
@@ -64,6 +65,7 @@ public class SwerveTuning extends OpMode {
 
         dashboard.sendTelemetryPacket(packet);
         dashboardTelemetry.setMsTransmissionInterval(10);
+        robot.updatePath(paths[pathSelector.currentState()]);
     }
 
     @Override

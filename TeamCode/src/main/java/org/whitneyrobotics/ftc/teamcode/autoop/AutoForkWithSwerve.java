@@ -2,6 +2,7 @@ package org.whitneyrobotics.ftc.teamcode.autoop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -12,11 +13,13 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.DataToolsLite;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 @Autonomous (name="WHS Freight Frenzy Auto Swerve",preselectTeleOp = "WHS TeleOp")
 public class AutoForkWithSwerve extends OpMode {
-
     public WHSRobotImpl robot;
 
     static final int RED = 0;
@@ -145,78 +148,79 @@ public class AutoForkWithSwerve extends OpMode {
 
     @Override
     public void init() {
-        robot = new WHSRobotImpl(hardwareMap);
-        robot.drivetrain.resetEncoders();
-        // add outtake reset
-        defineStatesEnabled();
-
-        AutoSwervePositions.getPath(new ArrayList<Position>());
-        AutoSwervePositions.generateAutoPaths();
-
-
         try {
-            String[] unformattedData = DataToolsLite.decode("autoConfig.txt");
-            //Object[] formattedData = DataToolsLite.convertBackToObjects(new DataToolsLite.ObjectTypes[]{DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.BOOLEAN,
-            //DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN}, unformattedData);
-            STARTING_ALLIANCE = (int) Integer.parseInt(unformattedData[0]);
-            STARTING_SIDE = (int) Integer.parseInt(unformattedData[1]);
-            stateEnabled[ROTATE_CAROUSEL] = (boolean) Boolean.parseBoolean(unformattedData[3]);
-            stateEnabled[PRELOAD] = (boolean) Boolean.parseBoolean(unformattedData[4]);
-            stateEnabled[WAREHOUSE] = (boolean) Boolean.parseBoolean(unformattedData[5]);
-            numCycles = (int) Integer.parseInt(unformattedData[6]);
-            stateEnabled[PARK] = (boolean) Boolean.parseBoolean(unformattedData[7]);
-            parkLocation = (int) Integer.parseInt(unformattedData[8]);
-        } catch(Exception e){
-            telemetry.addData("Data read sus","Reverted back to defaults");
-            //delete this
-            //throw new RuntimeException("sussy bussy");
-        }
+            robot = new WHSRobotImpl(hardwareMap);
+            robot.drivetrain.resetEncoders();
+            // add outtake reset
+            defineStatesEnabled();
 
-        // figure out actual values for this
-        startingPositions[RED][BOTTOM] = new Position(-1676.4,774.7);
-        startingPositions[RED][TOP] = new Position(-1676.4,-165.1);
-        startingPositions[BLUE][BOTTOM] = new Position(-1676.4,-774.7);
-        startingPositions[BLUE][TOP] = new Position(-1676.4,165.1);
+            AutoSwervePositions.getPath(new ArrayList<Position>());
+            AutoSwervePositions.generateAutoPaths();
 
-        startingOffsetPositions[RED][BOTTOM] = new Position(-1476.4,774.7);
-        startingOffsetPositions[RED][TOP] = new Position(-1476.4,-165.1);
-        startingOffsetPositions[BLUE][BOTTOM] = new Position(-1476.4,-774.7);
-        startingOffsetPositions[BLUE][TOP] = new Position(-1476.4,165.1);
 
-        shippingHubApproach[RED] = new Position(-550,1009.6);
-        shippingHubApproach[BLUE] = new Position(-600,-1200);
+            try {
+                String[] unformattedData = DataToolsLite.decode("autoConfig.txt");
+                //Object[] formattedData = DataToolsLite.convertBackToObjects(new DataToolsLite.ObjectTypes[]{DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.BOOLEAN,
+                //DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN}, unformattedData);
+                STARTING_ALLIANCE = (int) Integer.parseInt(unformattedData[0]);
+                STARTING_SIDE = (int) Integer.parseInt(unformattedData[1]);
+                stateEnabled[ROTATE_CAROUSEL] = (boolean) Boolean.parseBoolean(unformattedData[3]);
+                stateEnabled[PRELOAD] = (boolean) Boolean.parseBoolean(unformattedData[4]);
+                stateEnabled[WAREHOUSE] = (boolean) Boolean.parseBoolean(unformattedData[5]);
+                numCycles = (int) Integer.parseInt(unformattedData[6]);
+                stateEnabled[PARK] = (boolean) Boolean.parseBoolean(unformattedData[7]);
+                parkLocation = (int) Integer.parseInt(unformattedData[8]);
+            } catch(Exception e){
+                telemetry.addData("Data read sus","Reverted back to defaults");
+                //delete this
+                //throw new RuntimeException("sussy bussy");
+            }
 
-        shippingHubPosition[RED] = new Position(-659.6,675);
-        shippingHubPosition[BLUE] = new Position(-600,-500);
+            // figure out actual values for this
+            startingPositions[RED][BOTTOM] = new Position(-1676.4,774.7);
+            startingPositions[RED][TOP] = new Position(-1676.4,-165.1);
+            startingPositions[BLUE][BOTTOM] = new Position(-1676.4,-774.7);
+            startingPositions[BLUE][TOP] = new Position(-1676.4,165.1);
 
-        //sharedShippingHub[RED] = new Position(-152.4, -1200);
-        //sharedShippingHub[BLUE] = new Position(-152.4, 1200);
+            startingOffsetPositions[RED][BOTTOM] = new Position(-1476.4,774.7);
+            startingOffsetPositions[RED][TOP] = new Position(-1476.4,-165.1);
+            startingOffsetPositions[BLUE][BOTTOM] = new Position(-1476.4,-774.7);
+            startingOffsetPositions[BLUE][TOP] = new Position(-1476.4,165.1);
 
-        gapApproach[RED] = new Position(-1680,-200);
-        gapApproach[BLUE] = new Position(-1680,200);
+            shippingHubApproach[RED] = new Position(-550,1009.6);
+            shippingHubApproach[BLUE] = new Position(-600,-1200);
 
-        gapCrossPositions[RED] = new Position(-1700,-1400);
-        gapCrossPositions[BLUE] = new Position(-1700,1400);
+            shippingHubPosition[RED] = new Position(-659.6,675);
+            shippingHubPosition[BLUE] = new Position(-600,-500);
 
-        warehouse[RED] = new Position(-1670,-1550);
-        warehouse[BLUE] = new Position(-1670,1550);
+            //sharedShippingHub[RED] = new Position(-152.4, -1200);
+            //sharedShippingHub[BLUE] = new Position(-152.4, 1200);
 
-        storageUnitPositions[RED] = new Position(-1100,1425.2);
-        storageUnitPositions[BLUE] = new Position(-1100,-1425.2);
+            gapApproach[RED] = new Position(-1680,-200);
+            gapApproach[BLUE] = new Position(-1680,200);
 
-        carouselApproach[RED] = new Position(-1400.2, 1329.2);
-        carouselApproach[BLUE] = new Position(-900,-1600);
+            gapCrossPositions[RED] = new Position(-1700,-1400);
+            gapCrossPositions[BLUE] = new Position(-1700,1400);
 
-        carouselPositions[RED] = new Position(-1469.6,1560.2);
-        carouselPositions[BLUE] = new Position(-1630, -1590);
+            warehouse[RED] = new Position(-1670,-1550);
+            warehouse[BLUE] = new Position(-1670,1550);
 
-        shippingHubDepositApproach[RED] = new Position(-1219.2,304.8);
-        shippingHubDepositApproach[BLUE] = new Position(-1219.2,-304.8);
+            storageUnitPositions[RED] = new Position(-1100,1425.2);
+            storageUnitPositions[BLUE] = new Position(-1100,-1425.2);
 
-        shippingHubDeposit[RED] = new Position(-1079.6,304.8);
-        shippingHubDeposit[BLUE] = new Position(-1079.6,-304.8);
+            carouselApproach[RED] = new Position(-1400.2, 1329.2);
+            carouselApproach[BLUE] = new Position(-900,-1600);
 
-        // INIT Camera
+            carouselPositions[RED] = new Position(-1469.6,1560.2);
+            carouselPositions[BLUE] = new Position(-1630, -1590);
+
+            shippingHubDepositApproach[RED] = new Position(-1219.2,304.8);
+            shippingHubDepositApproach[BLUE] = new Position(-1219.2,-304.8);
+
+            shippingHubDeposit[RED] = new Position(-1079.6,304.8);
+            shippingHubDeposit[BLUE] = new Position(-1079.6,-304.8);
+
+            // INIT Camera
         /*initVuforia();
         initTfod();
         if (tfod != null) {
@@ -224,8 +228,8 @@ public class AutoForkWithSwerve extends OpMode {
             tfod.setZoom(2.5, 16.0/9.0);
         }
 */
-        // Camera Barcode Object Locations (Based on Red) TEST FOR THESE
-        // SCAN LEVEL 0
+            // Camera Barcode Object Locations (Based on Red) TEST FOR THESE
+            // SCAN LEVEL 0
         /*barcodeLocation[0][TESTED_LEFT] = 0; // LEFT
         barcodeLocation[0][TESTED_TOP] = 1; // TOP
         barcodeLocation[0][TESTED_RIGHT] = 2; // RIGHT
@@ -242,8 +246,22 @@ public class AutoForkWithSwerve extends OpMode {
         barcodeLocation[2][TESTED_TOP] = 1; // TOP
         barcodeLocation[2][TESTED_RIGHT] = 2; // RIGHT
         barcodeLocation[2][TESTED_BOTTOM] = 3; // BOTTOM*/
-        Coordinate initial = new Coordinate(startingPositions[STARTING_ALLIANCE][STARTING_SIDE],0);
-        robot.setInitialCoordinate(initial);
+            Coordinate initial = new Coordinate(startingPositions[STARTING_ALLIANCE][STARTING_SIDE],0);
+            robot.setInitialCoordinate(initial);
+        } catch (Exception e){
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            telemetry.addLine(sw.toString());
+            sw.flush();
+            try {
+                sw.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+           // throw new RuntimeException("stop");
+            //requestOpModeStop();
+        }
     }
 
 /*@Override
@@ -269,20 +287,21 @@ public class AutoForkWithSwerve extends OpMode {
 
     @Override
     public void loop() {
-        if(gamepad1.y || gamepad2.y){
-            throw new RuntimeException("bad");
-        }
+        try {
+            if(gamepad1.y || gamepad2.y){
+                throw new RuntimeException("bad");
+            }
 
-        robot.estimateHeading();
-        robot.estimatePosition();
+            robot.estimateHeading();
+            robot.estimatePosition();
 
-        if(gamepad1.a){
-            robot.drivetrain.operate(0,0);
-        } else {
-            switch (state) {
-                case INIT:
-                    switch (subState) {
-                        case 0:
+            if(gamepad1.a){
+                robot.drivetrain.operate(0,0);
+            } else {
+                switch (state) {
+                    case INIT:
+                        switch (subState) {
+                            case 0:
                             /*if ((((barcodeLocation[0][TESTED_LEFT] - ERROR_MARGIN) <= CAMERA_LEFT) && ((barcodeLocation[0][TESTED_LEFT] + ERROR_MARGIN) >= CAMERA_LEFT)) && (((barcodeLocation[0][TESTED_RIGHT] - ERROR_MARGIN) <= CAMERA_RIGHT) && ((barcodeLocation[0][TESTED_RIGHT] + ERROR_MARGIN) >= CAMERA_RIGHT))){
                                 scanLevel = 1;
                             } else if ((((barcodeLocation[1][TESTED_LEFT] - ERROR_MARGIN) <= CAMERA_LEFT) && ((barcodeLocation[1][TESTED_LEFT] + ERROR_MARGIN) >= CAMERA_LEFT)) && (((barcodeLocation[1][TESTED_RIGHT] - ERROR_MARGIN) <= CAMERA_RIGHT) && ((barcodeLocation[1][TESTED_RIGHT] + ERROR_MARGIN) >= CAMERA_RIGHT))){
@@ -292,325 +311,329 @@ public class AutoForkWithSwerve extends OpMode {
                             } else {
                                 scanLevel = 1;
                             }*/
-                            subState++;
-                            break;
-                        case 1:
-                            switch (subState) {
-                                case 0:
-                                    robot.drivetrain.resetEncoders();
-                                    //advanceState();
+                                subState++;
+                                break;
+                            case 1:
+                                switch (subState) {
+                                    case 0:
+                                        robot.drivetrain.resetEncoders();
+                                        //advanceState();
+                                        subState++;
+                                        break;
+                                    case 1:
+                                        //robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][STARTING_SIDE], false);
+                                        //if (!robot.driveToTargetInProgress()) {
+                                        //advanceState();
+                                        //}
+                                        robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][STARTING_SIDE],false);
+                                        if(!robot.driveToTargetInProgress()){
+                                            advanceState();
+                                        }
+                                        break;
+                                }
+                        }
+                        break;
+                    case ROTATE_CAROUSEL:
+                        switch (subState) {
+                            case 0:
+                                if(STARTING_ALLIANCE == RED){
+                                    robot.updatePath(AutoSwervePositions.redCarouselSwervePath);
+                                } else {
+                                    robot.updatePath(AutoSwervePositions.blueCarouselSwervePath);
+                                }
+                                robot.swerveToTarget();
+                                if (!robot.swerveInProgress()) {
                                     subState++;
+                                }
+                                break;
+                            case 1:
+                                robot.driveToTarget(carouselPositions[STARTING_ALLIANCE], true);
+                                if (!robot.driveToTargetInProgress()) {
+                                    subState++;
+                                }
+                                break;
+                            case 2:
+                                boolean checkBlue = ((STARTING_ALLIANCE) == BLUE) ? true : false;
+                                tempHeading = robot.getCoordinate().getHeading();
+                                //robot.drivetrain.operate(-0.02,-0.02);
+                                robot.carousel.operateAuto(checkBlue);
+                                if (!robot.carousel.isTimerCarouselInProgress()){
+                                    subState++;
+                                }
+                                break;
+                            case 3:
+                                robot.drivetrain.operate(0,0);
+                                //robot.setInitialCoordinate(new Coordinate(carouselPositions[STARTING_ALLIANCE],tempHeading));
+                                subState++;
+                                break;
+                            case 4:
+                                robot.driveToTarget(carouselApproach[STARTING_ALLIANCE], false);
+                                if(!robot.driveToTargetInProgress()){
+                                    advanceState();
+                                }
+                                break;
+                        }
+                        break;
+                    case PRELOAD:
+                        switch (subState) {
+                            case 0:
+                                if(STARTING_SIDE == BOTTOM){
+                                    robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], true); //check if outtake is on the back
+                                } else {
+                                    robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], true);
+                                }
+
+                                if (!robot.driveToTargetInProgress()) {
+                                    subState++;
+                                }
+                                break;
+                            case 1:
+                                robot.drivetrain.operate(0,0);
+                                robot.outtake.operateWithoutGamepad(scanLevel);
+                                if(!robot.outtake.slidingInProgress) {
+                                    subState++;
+                                }
+                                break;
+                            case 2:
+                                if(STARTING_SIDE == BOTTOM) {
+                                    robot.driveToTarget(shippingHubPosition[STARTING_ALLIANCE], true);
+                                } else {
+                                    robot.driveToTarget(shippingHubDeposit[STARTING_ALLIANCE], true);
+
+                                }
+
+                                if (!robot.driveToTargetInProgress()) {
+                                    subState++;
+                                }
+                                break;
+                            case 3:
+                                robot.drivetrain.operate(0,0);
+                                if(robot.outtake.autoDrop()){
+                                    subState++;
+                                }
+                                break;
+                            case 4:
+                                if(STARTING_SIDE == BOTTOM){
+                                    robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], false);
+
+                                } else {
+                                    robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], false);
+                                }
+                                if(!robot.driveToTargetInProgress()){
+                                    subState++;
+                                }
+                                break;
+                            case 5:
+                                robot.drivetrain.operate(0,0);
+                                robot.outtake.operateWithoutGamepad(0);
+                                if (!robot.outtake.slidingInProgress && stateEnabled[WAREHOUSE]){
+                                    advanceState();
+                                } else if (!robot.outtake.slidingInProgress) {
+                                    subState++;
+                                }
+                                break;
+                            case 6:
+                                robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][BOTTOM],false);
+                                if(!robot.driveToTargetInProgress()){
+                                    advanceState();
+                                }
+                                break;
+                        }
+                        break;
+                    case WAREHOUSE:
+                        //advanceState(); //remove this line of code when we can autocycle
+                        if(numCycles < 1){
+                            advanceState();
+                            break;
+                        }
+                        switch (subState) {
+                            case 0:
+                                if(STARTING_ALLIANCE == RED){
+                                    robot.updatePath(AutoSwervePositions.redShippingHubToGapApproachSwervePath);
+                                } else {
+                                    robot.updatePath(AutoSwervePositions.blueShippingHubToGapApproachSwervePath);
+                                }
+                                robot.swerveToTarget();
+                                if (!robot.swerveInProgress()) {
+                                    subState++;
+                                }
+                                break;
+                            case 1:
+                                robot.driveToTarget(gapCrossPositions[STARTING_ALLIANCE], false);
+                                if (!robot.driveToTargetInProgress()) {
+                                    subState++;
+                                }
+                                break;
+                            case 2:
+                                robot.intake.autoOperate(1.5,false);
+                                switch(superSubState){
+                                    case 0:
+                                        robot.driveToTarget(warehouse[STARTING_ALLIANCE], false);
+                                        if(!robot.driveToTargetInProgress()){
+                                            superSubState++;
+                                        }
+                                        break;
+                                    case 1:
+                                        if(!robot.intake.autoIntakeInProgress){
+                                            superSubState=0;
+                                            subState++;
+                                            break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case 3:
+                                robot.driveToTarget(gapCrossPositions[STARTING_ALLIANCE], true);
+                                if (!robot.driveToTargetInProgress()) {
+                                    subState++;
+                                }
+                                break;
+                            case 4:
+                                robot.intake.operate(false,true);
+                                robot.driveToTarget(gapApproach[STARTING_ALLIANCE], true);
+                                if(!robot.driveToTargetInProgress() && !robot.intake.autoIntakeInProgress){
+                                    subState++;
+                                }
+                                break;
+                            case 5:
+                                //robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][TOP],true);
+                                //if(!robot.driveToTargetInProgress()){
+                                subState++;
+                                //}
+                                robot.outtake.operateWithoutGamepad(3);
+                                if(!robot.outtake.slidingInProgress){
+                                    subState++;
+                                }
+                                break;
+                            case 6:
+                                robot.intake.disable();
+                                if(STARTING_ALLIANCE == RED){
+                                    robot.updatePath(AutoSwervePositions.redGapApproachToShippingHubSwervePath);
+                                } else {
+                                    robot.updatePath(AutoSwervePositions.blueGapApproachToShippingHubSwervePath);
+                                }
+                                robot.swerveToTarget();
+                                if(!robot.swerveInProgress()){
+                                    subState++;
+                                }
+                                break;
+                            case 7:
+                                robot.driveToTarget(shippingHubDeposit[STARTING_ALLIANCE], true);
+                                if(!robot.driveToTargetInProgress()){
+                                    subState++;
+                                }
+                                break;
+                            case 8:
+                                subState++;
+                                break;
+                            case 9:
+                                if(robot.outtake.autoDrop()){
+                                    subState++;
+                                }
+                                break;
+                            case 10:
+                                robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], false);
+                                if(!robot.driveToTargetInProgress){
+                                    subState++;
+                                }
+                                break;
+                            case 11:
+                                robot.outtake.operateWithoutGamepad(0);
+                                if(!robot.outtake.slidingInProgress){
+                                    subState++;
+                                }
+                                break;
+                            case 12:
+                                cycleCounter++;
+                                if(cycleCounter >= numCycles){
+                                    advanceState();
+                                } else {
+                                    subState = 0;
+                                }
+                                break;
+
+                        }
+                        break;
+                    case PARK:
+                        if (parkLocation == 1) {
+                            switch(subState){
+                                case 0:
+                                    robot.driveToTarget(storageUnitPositions[STARTING_ALLIANCE], false);
+                                    if (!robot.driveToTargetInProgress()) {
+                                        subState++;
+                                        robot.firstRotateLoop = true; //bc robot rotateToTarget sus
+                                    }
                                     break;
                                 case 1:
-                                    //robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][STARTING_SIDE], false);
-                                    //if (!robot.driveToTargetInProgress()) {
-                                    //advanceState();
-                                    //}
-                                    robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][STARTING_SIDE],false);
-                                    if(!robot.driveToTargetInProgress()){
+                                    //robot.driveToTarget(new Position(-900,1700*((STARTING_ALLIANCE==1) ? -1 : 1)),false);
+                                    robot.rotateToTarget(90,true);
+                                    if(!robot.rotateToTargetInProgress()){
                                         advanceState();
                                     }
                                     break;
                             }
-                    }
-                    break;
-                case ROTATE_CAROUSEL:
-                    switch (subState) {
-                        case 0:
-                            if(STARTING_ALLIANCE == RED){
-                                robot.updatePath(AutoSwervePositions.redCarouselSwervePath);
-                            } else {
-                                robot.updatePath(AutoSwervePositions.blueCarouselSwervePath);
-                            }
-                            robot.swerveToTarget();
-                            if (!robot.swerveInProgress()) {
-                                subState++;
-                            }
-                            break;
-                        case 1:
-                            robot.driveToTarget(carouselPositions[STARTING_ALLIANCE], true);
-                            if (!robot.driveToTargetInProgress()) {
-                                subState++;
-                            }
-                            break;
-                        case 2:
-                            boolean checkBlue = ((STARTING_ALLIANCE) == BLUE) ? true : false;
-                            tempHeading = robot.getCoordinate().getHeading();
-                            //robot.drivetrain.operate(-0.02,-0.02);
-                            robot.carousel.operateAuto(checkBlue);
-                            if (!robot.carousel.isTimerCarouselInProgress()){
-                                subState++;
-                            }
-                            break;
-                        case 3:
-                            robot.drivetrain.operate(0,0);
-                            //robot.setInitialCoordinate(new Coordinate(carouselPositions[STARTING_ALLIANCE],tempHeading));
-                            subState++;
-                            break;
-                        case 4:
-                            robot.driveToTarget(carouselApproach[STARTING_ALLIANCE], false);
-                            if(!robot.driveToTargetInProgress()){
-                                advanceState();
-                            }
-                            break;
-                    }
-                    break;
-                case PRELOAD:
-                    switch (subState) {
-                        case 0:
-                            if(STARTING_SIDE == BOTTOM){
-                                robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], true); //check if outtake is on the back
-                            } else {
-                                robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], true);
-                            }
-
-                            if (!robot.driveToTargetInProgress()) {
-                                subState++;
-                            }
-                            break;
-                        case 1:
-                            robot.drivetrain.operate(0,0);
-                            robot.outtake.operateWithoutGamepad(scanLevel);
-                            if(!robot.outtake.slidingInProgress) {
-                                subState++;
-                            }
-                            break;
-                        case 2:
-                            if(STARTING_SIDE == BOTTOM) {
-                                robot.driveToTarget(shippingHubPosition[STARTING_ALLIANCE], true);
-                            } else {
-                                robot.driveToTarget(shippingHubDeposit[STARTING_ALLIANCE], true);
-
-                            }
-
-                            if (!robot.driveToTargetInProgress()) {
-                                subState++;
-                            }
-                            break;
-                        case 3:
-                            robot.drivetrain.operate(0,0);
-                            if(robot.outtake.autoDrop()){
-                                subState++;
-                            }
-                            break;
-                        case 4:
-                            if(STARTING_SIDE == BOTTOM){
-                                robot.driveToTarget(shippingHubApproach[STARTING_ALLIANCE], false);
-
-                            } else {
-                                robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], false);
-                            }
-                            if(!robot.driveToTargetInProgress()){
-                                subState++;
-                            }
-                            break;
-                        case 5:
-                            robot.drivetrain.operate(0,0);
-                            robot.outtake.operateWithoutGamepad(0);
-                            if (!robot.outtake.slidingInProgress && stateEnabled[WAREHOUSE]){
-                                advanceState();
-                            } else if (!robot.outtake.slidingInProgress) {
-                                subState++;
-                            }
-                            break;
-                        case 6:
-                            robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][BOTTOM],false);
-                            if(!robot.driveToTargetInProgress()){
-                                advanceState();
-                            }
-                            break;
-                    }
-                    break;
-                case WAREHOUSE:
-                    //advanceState(); //remove this line of code when we can autocycle
-                    if(numCycles < 1){
-                        advanceState();
-                        break;
-                    }
-                    switch (subState) {
-                        case 0:
-                            if(STARTING_ALLIANCE == RED){
-                                robot.updatePath(AutoSwervePositions.redShippingHubToGapApproachSwervePath);
-                            } else {
-                                robot.updatePath(AutoSwervePositions.blueShippingHubToGapApproachSwervePath);
-                            }
-                            robot.swerveToTarget();
-                            if (!robot.swerveInProgress()) {
-                                subState++;
-                            }
-                            break;
-                        case 1:
-                            robot.driveToTarget(gapCrossPositions[STARTING_ALLIANCE], false);
-                            if (!robot.driveToTargetInProgress()) {
-                                subState++;
-                            }
-                            break;
-                        case 2:
-                            robot.intake.autoOperate(1.5,false);
-                            switch(superSubState){
+                        } else {
+                            switch (subState) {
                                 case 0:
-                                    robot.driveToTarget(warehouse[STARTING_ALLIANCE], false);
-                                    if(!robot.driveToTargetInProgress()){
-                                        superSubState++;
+                                    int compareVarAdjust;
+                                    compareVarAdjust = (STARTING_ALLIANCE == BLUE) ? 1 : -1;
+                                    if (robot.getCoordinate().getY() * compareVarAdjust  < 1200) {
+                                        subState++;
+                                    } else {
+                                        subState = 2;
                                     }
                                     break;
                                 case 1:
-                                    if(!robot.intake.autoIntakeInProgress){
-                                        superSubState=0;
-                                        subState++;
-                                        break;
+                                    if(STARTING_ALLIANCE == RED){
+                                        robot.updatePath(AutoSwervePositions.redShippingHubToWarehouseSwervePath);
+                                    } else {
+                                        robot.updatePath(AutoSwervePositions.blueShippingHubToWarehouseSwervePath);
+                                    }
+                                    robot.swerveToTarget();
+                                    if (!robot.swerveInProgress()) {
+                                        advanceState();
                                     }
                                     break;
+                                case 2:
+                                    robot.driveToTarget(gapCrossPositions[STARTING_ALLIANCE], true);
+                                    if (!robot.driveToTargetInProgress()) {
+                                        subState++;
+                                        advanceState();
+                                    }
                             }
                             break;
-                        case 3:
-                            robot.driveToTarget(gapCrossPositions[STARTING_ALLIANCE], true);
-                            if (!robot.driveToTargetInProgress()) {
-                                subState++;
-                            }
-                            break;
-                        case 4:
-                            robot.intake.operate(false,true);
-                            robot.driveToTarget(gapApproach[STARTING_ALLIANCE], true);
-                            if(!robot.driveToTargetInProgress() && !robot.intake.autoIntakeInProgress){
-                                subState++;
-                            }
-                            break;
-                        case 5:
-                            //robot.driveToTarget(startingOffsetPositions[STARTING_ALLIANCE][TOP],true);
-                            //if(!robot.driveToTargetInProgress()){
-                            subState++;
-                            //}
-                            robot.outtake.operateWithoutGamepad(3);
-                            if(!robot.outtake.slidingInProgress){
-                                subState++;
-                            }
-                            break;
-                        case 6:
-                            robot.intake.disable();
-                            if(STARTING_ALLIANCE == RED){
-                                robot.updatePath(AutoSwervePositions.redGapApproachToShippingHubSwervePath);
-                            } else {
-                                robot.updatePath(AutoSwervePositions.blueGapApproachToShippingHubSwervePath);
-                            }
-                            robot.swerveToTarget();
-                            if(!robot.swerveInProgress()){
-                                subState++;
-                            }
-                            break;
-                        case 7:
-                            robot.driveToTarget(shippingHubDeposit[STARTING_ALLIANCE], true);
-                            if(!robot.driveToTargetInProgress()){
-                                subState++;
-                            }
-                            break;
-                        case 8:
-                            subState++;
-                            break;
-                        case 9:
-                            if(robot.outtake.autoDrop()){
-                                subState++;
-                            }
-                            break;
-                        case 10:
-                            robot.driveToTarget(shippingHubDepositApproach[STARTING_ALLIANCE], false);
-                            if(!robot.driveToTargetInProgress){
-                                subState++;
-                            }
-                            break;
-                        case 11:
-                            robot.outtake.operateWithoutGamepad(0);
-                            if(!robot.outtake.slidingInProgress){
-                                subState++;
-                            }
-                            break;
-                        case 12:
-                            cycleCounter++;
-                            if(cycleCounter >= numCycles){
-                                advanceState();
-                            } else {
-                                subState = 0;
-                            }
-                            break;
-
-                    }
-                    break;
-                case PARK:
-                    if (parkLocation == 1) {
-                        switch(subState){
-                            case 0:
-                                robot.driveToTarget(storageUnitPositions[STARTING_ALLIANCE], false);
-                                if (!robot.driveToTargetInProgress()) {
-                                    subState++;
-                                    robot.firstRotateLoop = true; //bc robot rotateToTarget sus
-                                }
-                                break;
-                            case 1:
-                                //robot.driveToTarget(new Position(-900,1700*((STARTING_ALLIANCE==1) ? -1 : 1)),false);
-                                robot.rotateToTarget(90,true);
-                                if(!robot.rotateToTargetInProgress()){
-                                    advanceState();
-                                }
-                                break;
-                        }
-                    } else {
-                        switch (subState) {
-                            case 0:
-                                int compareVarAdjust;
-                                compareVarAdjust = (STARTING_ALLIANCE == BLUE) ? 1 : -1;
-                                if (robot.getCoordinate().getY() * compareVarAdjust  < 1200) {
-                                    subState++;
-                                } else {
-                                    subState = 2;
-                                }
-                                break;
-                            case 1:
-                                if(STARTING_ALLIANCE == RED){
-                                    robot.updatePath(AutoSwervePositions.redShippingHubToWarehouseSwervePath);
-                                } else {
-                                    robot.updatePath(AutoSwervePositions.blueShippingHubToWarehouseSwervePath);
-                                }
-                                robot.swerveToTarget();
-                                if (!robot.swerveInProgress()) {
-                                    advanceState();
-                                }
-                                break;
-                            case 2:
-                                robot.driveToTarget(gapCrossPositions[STARTING_ALLIANCE], true);
-                                if (!robot.driveToTargetInProgress()) {
-                                    subState++;
-                                    advanceState();
-                                }
                         }
                         break;
-                    }
-                    break;
-                case STOP:
-                    robot.drivetrain.operate(0,0);
-                    DataToolsLite.encode("heading.txt",robot.getCoordinate().getHeading());
-                    DataToolsLite.encode("teleOpConfig.txt",new Object[]{false, false, false});
-                    break;
-                default:
-                    break;
+                    case STOP:
+                        robot.drivetrain.operate(0,0);
+                        DataToolsLite.encode("heading.txt",robot.getCoordinate().getHeading());
+                        DataToolsLite.encode("teleOpConfig.txt",new Object[]{false, false, false});
+                        break;
+                    default:
+                        break;
 
+                }
             }
-        }
-        telemetry.addData("Current state: ",stateNames[state]);
-        telemetry.addData("Substate: ", subState);
-        telemetry.addData("Starting Side",(STARTING_SIDE==BOTTOM) ? "BOTTOM" : "TOP");
-        telemetry.addData("Starting Alliance",(STARTING_ALLIANCE == 0) ? "RED" : "BLUE");
-        telemetry.addData("Estimated Position",String.format("%s,%s",robot.getCoordinate().getX(),robot.getCoordinate().getY()));
-        telemetry.addData("Heading",robot.getCoordinate().getHeading());
-        telemetry.addLine();
-        telemetry.addData("Drive to target:", robot.driveToTargetInProgress());
-        telemetry.addData("Rotate to target:", robot.rotateToTargetInProgress());
-        telemetry.addData("DTT error",robot.distanceToTargetDebug);
-        telemetry.addData("RTT error",robot.angleToTargetDebug);
-        //telemetry.addData("Outtake extension: ", robot.robotOuttake.slidingInProgress);
-        //telemetry.addData("Intaking item from warehouse: ", robot.robotIntake.intakeAutoDone);
+            telemetry.addData("Current state: ",stateNames[state]);
+            telemetry.addData("Substate: ", subState);
+            telemetry.addData("Starting Side",(STARTING_SIDE==BOTTOM) ? "BOTTOM" : "TOP");
+            telemetry.addData("Starting Alliance",(STARTING_ALLIANCE == 0) ? "RED" : "BLUE");
+            telemetry.addData("Estimated Position",String.format("%s,%s",robot.getCoordinate().getX(),robot.getCoordinate().getY()));
+            telemetry.addData("Heading",robot.getCoordinate().getHeading());
+            telemetry.addLine();
+            telemetry.addData("Drive to target:", robot.driveToTargetInProgress());
+            telemetry.addData("Rotate to target:", robot.rotateToTargetInProgress());
+            telemetry.addData("DTT error",robot.distanceToTargetDebug);
+            telemetry.addData("RTT error",robot.angleToTargetDebug);
+            //telemetry.addData("Outtake extension: ", robot.robotOuttake.slidingInProgress);
+            //telemetry.addData("Intaking item from warehouse: ", robot.robotIntake.intakeAutoDone);
 
-        //lag output
-        telemetry.addData("Current processing latency: ", (Math.round(System.nanoTime()-lastRecordedTime)/1E6) + "ms");
-        lastRecordedTime = System.nanoTime();
+            //lag output
+            telemetry.addData("Current processing latency: ", (Math.round(System.nanoTime()-lastRecordedTime)/1E6) + "ms");
+            lastRecordedTime = System.nanoTime();
+        } catch (Exception e){
+            e.printStackTrace(System.out);
+        }
     }
+
 }

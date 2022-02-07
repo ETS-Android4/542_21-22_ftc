@@ -1,5 +1,7 @@
 package org.whitneyrobotics.ftc.teamcode.autoop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -80,7 +82,7 @@ public class AutoOp extends OpMode {
     public void defineStatesEnabled(){
         stateEnabled[INIT] = true;
         stateEnabled[ROTATE_CAROUSEL] = true;
-        stateEnabled[PRELOAD] = false;
+        stateEnabled[PRELOAD] = true;
         stateEnabled[WAREHOUSE] = false;
         stateEnabled[PARK] = true;
         stateEnabled[STOP] = true;
@@ -145,12 +147,14 @@ public class AutoOp extends OpMode {
 
     @Override
     public void init() {
+        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry(),telemetry);
+        telemetry.setMsTransmissionInterval(10);
         robot = new WHSRobotImpl(hardwareMap);
         robot.drivetrain.resetEncoders();
         // add outtake reset
         defineStatesEnabled();
 
-        AutoSwervePositions.getPath(new ArrayList<Position>());
+        AutoSwervePositions.instantiatePaths();
         AutoSwervePositions.generateAutoPaths();
 
 
@@ -186,29 +190,29 @@ public class AutoOp extends OpMode {
         shippingHubApproach[RED] = new Position(-550,1009.6);
         shippingHubApproach[BLUE] = new Position(-600,-1200);
 
-        shippingHubPosition[RED] = new Position(-659.6,675);
+        shippingHubPosition[RED] = new Position(-639.6,600);
         shippingHubPosition[BLUE] = new Position(-600,-500);
 
         //sharedShippingHub[RED] = new Position(-152.4, -1200);
         //sharedShippingHub[BLUE] = new Position(-152.4, 1200);
 
-        gapApproach[RED] = new Position(-1680,-200);
+        gapApproach[RED] = new Position(-1760,-200);
         gapApproach[BLUE] = new Position(-1680,200);
 
-        gapCrossPositions[RED] = new Position(-1700,-1400);
-        gapCrossPositions[BLUE] = new Position(-1700,1400);
+        gapCrossPositions[RED] = new Position(-1910,-1500);
+        gapCrossPositions[BLUE] = new Position(-1750,1400);
 
         warehouse[RED] = new Position(-1670,-1550);
         warehouse[BLUE] = new Position(-1670,1550);
 
-        storageUnitPositions[RED] = new Position(-1100,1425.2);
+        storageUnitPositions[RED] = new Position(-1245,1375.2);
         storageUnitPositions[BLUE] = new Position(-1100,-1425.2);
 
-        carouselApproach[RED] = new Position(-1400.2, 1329.2);
+        carouselApproach[RED] = new Position(-1445.2, 1269.2);
         carouselApproach[BLUE] = new Position(-900,-1600);
 
-        carouselPositions[RED] = new Position(-1469.6,1560.2);
-        carouselPositions[BLUE] = new Position(-1630, -1590);
+        carouselPositions[RED] = new Position(-1515.6,1495.2);
+        carouselPositions[BLUE] = new Position(-1630, -1575);
 
         shippingHubDepositApproach[RED] = new Position(-1219.2,304.8);
         shippingHubDepositApproach[BLUE] = new Position(-1219.2,-304.8);
