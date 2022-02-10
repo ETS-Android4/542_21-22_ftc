@@ -48,7 +48,7 @@ public class QueueManagerTest extends OpMode {
         QueueManager.processQueue();
         switch(autoState){
             case 0:
-                driveToCarousel = new QueueItem(() -> robot.driveToTarget(carousel,false),() -> !robot.driveToTargetInProgress(),true);
+                driveToCarousel = new QueueItem(() -> robot.driveToTarget(carousel,false),robot::driveToTargetInProgress,true);
                 driveToCarousel.setMode(QueueItem.ProcessMode.LINEAR);
                 QueueManager.add(driveToCarousel);
                 //driveToCarousel.action.invoke();

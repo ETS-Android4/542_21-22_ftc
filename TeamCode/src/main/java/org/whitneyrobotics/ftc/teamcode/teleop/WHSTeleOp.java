@@ -2,6 +2,7 @@ package org.whitneyrobotics.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.util.DataToolsLite;
@@ -20,13 +21,37 @@ public class WHSTeleOp extends OpMode {
     private Outtake outtake;
     private int autoDropStateTele = 1;
     private boolean autoEndTele = false;
+    private boolean firstTeleMatchLoop = true;
     private int teleState = 0;
     private double teleOpTime = 90.3;
     private SimpleTimer teleTimer = new SimpleTimer();
+    private SimpleTimer matchTimer = new SimpleTimer();
     private boolean teleStarted = false;
     private SimpleTimer teleCountdown = new SimpleTimer();
     private int countdownState = 0;
     private boolean useCountdown = false;
+
+    private boolean[] notificationsPushed = {false, false}; //first for endgame, second for match end
+    private double[] notificationTimes = {90.0,120.0};
+    Gamepad.RumbleEffect endgame = new Gamepad.RumbleEffect.Builder()
+            .addStep(0.5,0.5,500)
+            .addStep(0,0,500)
+            .addStep(0.5,0.5,500)
+            .addStep(0,0,500)
+            .addStep(0.5,0.5,500)
+            .addStep(0,0,500)
+            .build();
+    Gamepad.RumbleEffect matchEnd = new Gamepad.RumbleEffect.Builder()
+            .addStep(0.20,0.20,350)
+            .addStep(0,0,150)
+            .addStep(0.40,0.40,350)
+            .addStep(0,0,150)
+            .addStep(0.60,0.60,350)
+            .addStep(0,0,150)
+            .addStep(0.80,0.80,350)
+            .addStep(0,0,150)
+            .addStep(1,1,350)
+            .build();
 
     private long startTime;
     String[] outtakeLabels = new String[]{"Level 1","Level 1.5","Level 2", "Level 3"};
@@ -37,21 +62,26 @@ public class WHSTeleOp extends OpMode {
     public void init() {
         telemetry.setAutoClear(false);
         robot = new WHSRobotImpl(hardwareMap);
-        String[] data = DataToolsLite.decode("autoConfig.txt");
-        String[] teleData = DataToolsLite.decode("teleOpConfig.txt");
         try {
+            String[] data = DataToolsLite.decode("autoConfig.txt");
+            String[] teleData = DataToolsLite.decode("teleOpConfig.txt");
             robot.setInitialCoordinate(new Coordinate(0,0,Double.parseDouble(DataToolsLite.decode("heading.txt")[0])));
             robot.carousel.setAlliance((int)Integer.parseInt(data[0],10));
             autoEndTele = ((boolean)Boolean.parseBoolean(teleData[0]));
             teleOpTime += ((boolean)Boolean.parseBoolean((teleData[1])) ? 30.0 : 0.0);
             useCountdown = ((boolean)Boolean.parseBoolean(teleData[2]));
+            notificationTimes[0] -= Double.parseDouble(teleData[3]);
+            notificationTimes[1] -= Double.parseDouble(teleData[4]);
+
             telemetry.addLine("Auto set alliance to " + robot.carousel.getAlliance());
             telemetry.addData("TeleOp Timer",autoEndTele);
             telemetry.addData("Endgame time included", ((boolean)Boolean.parseBoolean((teleData[1]))));
             telemetry.addData("Countdown",useCountdown);
+            telemetry.addLine("I will notify you about endgame at " + notificationTimes[0] + "seconds into TeleOp");
+            telemetry.addLine("I will notify you about match end at " + notificationTimes[1] + "seconds into TeleOp");
         } catch (Exception e){
-            telemetry.addLine("sussy bussy");
-            System.out.println("sussy bussy");
+            telemetry.addLine("There was a problem decoding some data");
+            System.out.println("There was a problem decoding some data");
         }
         lastRecordedTime=lastRecordedTime = System.nanoTime();
         robot.levelSelector.setState(robot.levelSelector.howManyStates());
@@ -62,6 +92,25 @@ public class WHSTeleOp extends OpMode {
 
     @Override
     public void loop() {
+        if(!autoEndTele){
+            if(firstTeleMatchLoop){
+                matchTimer.set(120.3);
+                firstTeleMatchLoop = false;
+            } else {
+                if(matchTimer.getTimeElapsed()>notificationTimes[0] && !notificationsPushed[0]){
+                    gamepad1.runRumbleEffect(endgame);
+                    gamepad2.runRumbleEffect(endgame);
+                    notificationsPushed[0] = false;
+                }
+                if(matchTimer.getTimeElapsed()>notificationTimes[1] && !notificationsPushed[1]){
+                    gamepad1.runRumbleEffect(matchEnd);
+                    gamepad2.runRumbleEffect(matchEnd);
+                    notificationsPushed[1] = false;
+                }
+                if(matchTimer.isExpired()) requestOpModeStop(); //Dunno if we should keep this, kills the OpMode gracefully if teleop is done
+            }
+        }
+
         telemetry.setAutoClear(true);
         robot.estimateHeading();
 
@@ -200,7 +249,7 @@ public class WHSTeleOp extends OpMode {
                 robot.drivetrain.operate(0,0);
                 robot.intake.disable();
                 robot.outtake.operateSlides(0);
-                telemetry.addLine("Tele disabled. Press start on both controllers to re-enable.");
+                telemetry.addLine("Tele disabled in DP mode. Press start on both controllers to re-enable.");
                 if(gamepad1.start && gamepad2.start){
                     teleState = 0;
                     teleStarted = false;

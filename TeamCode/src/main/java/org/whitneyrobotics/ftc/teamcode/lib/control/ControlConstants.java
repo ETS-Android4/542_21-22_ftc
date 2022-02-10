@@ -11,6 +11,7 @@ public class ControlConstants {
     public double kA;
 
     //feedforward
+    @FunctionalInterface
     public interface FeedforwardFunction{
         double invoke (double currentPosition, double currentVelocity);
     }

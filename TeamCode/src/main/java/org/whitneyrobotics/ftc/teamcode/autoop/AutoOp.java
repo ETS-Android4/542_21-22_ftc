@@ -160,9 +160,6 @@ public class AutoOp extends OpMode {
 
         try {
             String[] unformattedData = DataToolsLite.decode("autoConfig.txt");
-            //Object[] formattedData = DataToolsLite.convertBackToObjects(new DataToolsLite.ObjectTypes[]{DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.BOOLEAN,
-            //DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN, DataToolsLite.ObjectTypes.INT, DataToolsLite.ObjectTypes.BOOLEAN}, unformattedData);
-            STARTING_ALLIANCE = (int) Integer.parseInt(unformattedData[0]);
             STARTING_SIDE = (int) Integer.parseInt(unformattedData[1]);
             stateEnabled[ROTATE_CAROUSEL] = (boolean) Boolean.parseBoolean(unformattedData[3]);
             stateEnabled[PRELOAD] = (boolean) Boolean.parseBoolean(unformattedData[4]);
@@ -171,12 +168,10 @@ public class AutoOp extends OpMode {
             stateEnabled[PARK] = (boolean) Boolean.parseBoolean(unformattedData[7]);
             parkLocation = (int) Integer.parseInt(unformattedData[8]);
         } catch(Exception e){
-            telemetry.addData("Data read sus","Reverted back to defaults");
-            //delete this
-            //throw new RuntimeException("sussy bussy");
+            telemetry.addData("Data read threw an error","Reverted back to defaults");
         }
 
-        // figure out actual values for this
+        // Begin Positions
         startingPositions[RED][BOTTOM] = new Position(-1676.4,774.7);
         startingPositions[RED][TOP] = new Position(-1676.4,-165.1);
         startingPositions[BLUE][BOTTOM] = new Position(-1676.4,-774.7);
@@ -196,10 +191,10 @@ public class AutoOp extends OpMode {
         //sharedShippingHub[RED] = new Position(-152.4, -1200);
         //sharedShippingHub[BLUE] = new Position(-152.4, 1200);
 
-        gapApproach[RED] = new Position(-1760,-200);
+        gapApproach[RED] = new Position(-1880,-100);
         gapApproach[BLUE] = new Position(-1680,200);
 
-        gapCrossPositions[RED] = new Position(-1910,-1500);
+        gapCrossPositions[RED] = new Position(-2150,-1500);
         gapCrossPositions[BLUE] = new Position(-1750,1400);
 
         warehouse[RED] = new Position(-1670,-1550);
@@ -208,13 +203,13 @@ public class AutoOp extends OpMode {
         storageUnitPositions[RED] = new Position(-1245,1375.2);
         storageUnitPositions[BLUE] = new Position(-1100,-1425.2);
 
-        carouselApproach[RED] = new Position(-1445.2, 1269.2);
+        carouselApproach[RED] = new Position(-1465.2, 1350.2);
         carouselApproach[BLUE] = new Position(-900,-1600);
 
-        carouselPositions[RED] = new Position(-1515.6,1495.2);
+        carouselPositions[RED] = new Position(-1535.6,1535.2);
         carouselPositions[BLUE] = new Position(-1630, -1575);
 
-        shippingHubDepositApproach[RED] = new Position(-1219.2,304.8);
+        shippingHubDepositApproach[RED] = new Position(-1269.2,304.8);
         shippingHubDepositApproach[BLUE] = new Position(-1219.2,-304.8);
 
         shippingHubDeposit[RED] = new Position(-1079.6,304.8);
@@ -588,7 +583,7 @@ public class AutoOp extends OpMode {
                 case STOP:
                     robot.drivetrain.operate(0,0);
                     DataToolsLite.encode("heading.txt",robot.getCoordinate().getHeading());
-                    DataToolsLite.encode("teleOpConfig.txt",new Object[]{false, false, false});
+                    //DataToolsLite.encode("teleOpConfig.txt",new Object[]{false, false, false});
                     break;
                 default:
                     break;

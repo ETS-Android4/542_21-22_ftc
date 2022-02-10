@@ -25,7 +25,9 @@ public class ConfigureTele extends OpMode {
         SelectionMenu.Prompt Countdown = new SelectionMenu.Prompt("Teleop Countdown")
                 .addSelection("NO",false)
                 .addSelection("YES",true);
-        teleOpConfig = new SelectionMenu("TeleOp Configuration",AutoEndTele, IncludeEndgameTime,Countdown)
+        SelectionMenu.Slider SecondBeforeEndgameNotif = new SelectionMenu.Slider("Seconds before endgame for notification (3 second duration)",0,11);
+        SelectionMenu.Slider SecondsBeforeMatchEndNotif = new SelectionMenu.Slider("Seconds before match end for notification (5 second duration)",0,16);
+        teleOpConfig = new SelectionMenu("TeleOp Configuration",AutoEndTele, IncludeEndgameTime,Countdown,SecondBeforeEndgameNotif,SecondsBeforeMatchEndNotif)
                 .addInstructions("Press A & B to save. Use dpad L/R to navigate prompts and use up and down to select.");
         teleOpConfig.init();
     }

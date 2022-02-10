@@ -12,7 +12,7 @@ public class Voltage extends OpMode {
 
     @Override
     public void init() {
-        voltageSensor = hardwareMap.get(VoltageSensor.class, "");
+        voltageSensor = hardwareMap.get(VoltageSensor.class, "Motor Controller 1");
     }
 
     @Override

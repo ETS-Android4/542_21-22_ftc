@@ -33,8 +33,9 @@ public class DataToolsLite {
         ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile(fileName),content);
     }
 
-    public static String[] decode(String fileName){
+    public static String[] decode(String fileName) throws DataNotFoundException{
         String content = ReadWriteFile.readFile(AppUtil.getInstance().getSettingsFile(fileName));
+        if(content == null) throw new DataNotFoundException("File " + fileName + " does not exist - Was this created with the encode method already?");
         DataTools.Data output = new DataTools.Data();
         String[] contentDivided = content.split(",");
         String[] values = new String[contentDivided.length];
