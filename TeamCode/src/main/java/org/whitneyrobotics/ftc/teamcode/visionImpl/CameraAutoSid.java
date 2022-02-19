@@ -15,7 +15,7 @@ public class CameraAutoSid extends OpMode {
 
     @Override
     public void init() {
-        int cameraMoniterViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMoniterViewId", );
+        //int cameraMoniterViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMoniterViewId");
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam"));
 
         webcam.setPipeline(scanner);
