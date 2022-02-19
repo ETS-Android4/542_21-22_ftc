@@ -94,7 +94,7 @@ public class WHSTeleOp extends OpMode {
     public void loop() {
         if(!autoEndTele){
             if(firstTeleMatchLoop){
-                matchTimer.set(120.3);
+                matchTimer.set(150.3);
                 firstTeleMatchLoop = false;
             } else {
                 if(matchTimer.getTimeElapsed()>notificationTimes[0] && !notificationsPushed[0]){
@@ -107,7 +107,7 @@ public class WHSTeleOp extends OpMode {
                     gamepad2.runRumbleEffect(matchEnd);
                     notificationsPushed[1] = false;
                 }
-                if(matchTimer.isExpired()) requestOpModeStop(); //Dunno if we should keep this, kills the OpMode gracefully if teleop is done
+                //if(matchTimer.isExpired()) requestOpModeStop(); //Dunno if we should keep this, kills the OpMode gracefully if teleop is done
             }
         }
 

@@ -182,16 +182,16 @@ public class AutoOp extends OpMode {
         startingOffsetPositions[BLUE][BOTTOM] = new Position(-1476.4,-774.7);
         startingOffsetPositions[BLUE][TOP] = new Position(-1476.4,165.1);
 
-        shippingHubApproach[RED] = new Position(-550,1009.6);
+        shippingHubApproach[RED] = new Position(-535,1009.6);
         shippingHubApproach[BLUE] = new Position(-600,-1200);
 
-        shippingHubPosition[RED] = new Position(-639.6,600);
+        shippingHubPosition[RED] = new Position(-689.6,600);
         shippingHubPosition[BLUE] = new Position(-600,-500);
 
         //sharedShippingHub[RED] = new Position(-152.4, -1200);
         //sharedShippingHub[BLUE] = new Position(-152.4, 1200);
 
-        gapApproach[RED] = new Position(-1880,-100);
+        gapApproach[RED] = new Position(-1820,-100);
         gapApproach[BLUE] = new Position(-1680,200);
 
         gapCrossPositions[RED] = new Position(-2150,-1500);

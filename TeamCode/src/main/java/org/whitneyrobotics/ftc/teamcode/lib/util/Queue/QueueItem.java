@@ -15,10 +15,20 @@ public class QueueItem {
         LINEAR, ITERATIVE //use Linear if OpMode, Iterative if LinearOpMode
     }
 
+    public enum QueueItemState {
+        PENDING, PROCESSING, COMPLETED
+    }
+
+    public static void setDefaultProcessMode(ProcessMode mode){
+        defaultMode = mode;
+    }
+
+    public static ProcessMode defaultMode = ProcessMode.LINEAR;
+
     public boolean async = false;
-    public WHSRobotImpl robot;
     private boolean processed = false;
-    public ProcessMode processMode = ProcessMode.LINEAR;
+    public ProcessMode processMode;
+    public QueueItemState state = QueueItemState.PENDING;
 
     public RobotAction action;
     public Supplier exitCondition;
@@ -27,6 +37,7 @@ public class QueueItem {
         this.action = action;
         this.exitCondition = exitCondition;
         this.async = async;
+        processMode = defaultMode;
     }
 
     public QueueItem setMode(ProcessMode mode){
@@ -35,6 +46,7 @@ public class QueueItem {
     }
 
     public boolean process(){
+        state = QueueItemState.PROCESSING;
         switch(processMode){
             case LINEAR:
                 if(!processed){
@@ -51,10 +63,15 @@ public class QueueItem {
             default:
                 throw new IllegalArgumentException("Specified Process Mode does not exist for QueueItem.ProcessMode enum");
         }
+        if(processed){
+            state = QueueItemState.COMPLETED;
+        }
         return processed;
     }
 
     public boolean isAlive(){return !processed;}
 
     public boolean isProcessed(){return processed;}
+
+    public QueueItemState getState(){return state;}
 }

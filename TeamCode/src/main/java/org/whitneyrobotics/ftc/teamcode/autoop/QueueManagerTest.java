@@ -11,32 +11,30 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.whitneyrobotics.ftc.teamcode.framework.DashboardOpMode;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Queue.QueueItem;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Queue.QueueManager;
+import org.whitneyrobotics.ftc.teamcode.subsys.Carousel;
+import org.whitneyrobotics.ftc.teamcode.subsys.FeedForwardCarousel;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
 @Autonomous(name="QueueTest",group="Tests")
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class QueueManagerTest extends OpMode {
+public class QueueManagerTest extends DashboardOpMode {
     WHSRobotImpl robot;
     private int autoState = 0;
-    Position carousel = new Position(-1000,1000);
+    Position carouselPos = new Position(-1000,1000);
     QueueItem driveToCarousel;
-
-    FtcDashboard dashboard;
-    Telemetry dashboardTelemetry;
-    TelemetryPacket packet = new TelemetryPacket();
+    FeedForwardCarousel carousel;
 
     @Override
     public void init() {
-        dashboard = FtcDashboard.getInstance();
-        dashboardTelemetry = dashboard.getTelemetry();
-        dashboardTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        dashboard.sendTelemetryPacket(packet);
+        initializeDashboard(25);
 
         robot = new WHSRobotImpl(hardwareMap);
+        carousel = new FeedForwardCarousel(hardwareMap);
         robot.setInitialCoordinate(new Coordinate(-500,500,0));
         //Position carousel = new Position(-1000,1000);
         //QueueItem driveToCarousel = new QueueItem(() -> robot.driveToTarget(carousel,false),() -> robot.driveToTargetInProgress(),false);
@@ -48,10 +46,11 @@ public class QueueManagerTest extends OpMode {
         QueueManager.processQueue();
         switch(autoState){
             case 0:
-                driveToCarousel = new QueueItem(() -> robot.driveToTarget(carousel,false),robot::driveToTargetInProgress,true);
+                driveToCarousel = new QueueItem(() -> robot.driveToTarget(carouselPos,false),() -> robot.driveToTargetInProgress(),true);
                 driveToCarousel.setMode(QueueItem.ProcessMode.LINEAR);
                 QueueManager.add(driveToCarousel);
                 //driveToCarousel.action.invoke();
+                QueueManager.add(new QueueItem(() -> carousel.operate(true,true),() -> carousel.carouselInProgress(),false));
                 packet.addLine(String.valueOf(driveToCarousel.exitCondition.get()));
                 packet.addLine(String.valueOf(driveToCarousel.isAlive()));
                 autoState++;

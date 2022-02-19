@@ -13,7 +13,7 @@ public class ControlConstants {
     //feedforward
     @FunctionalInterface
     public interface FeedforwardFunction{
-        double invoke (double currentPosition, double currentVelocity);
+        double invoke(double currentPosition, double currentVelocity);
     }
     public FeedforwardFunction kF;
 

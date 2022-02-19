@@ -53,7 +53,7 @@ public class Outtake {
         LEVEL1(0.0),
         LEVEL1_5(1200),
         LEVEL2(1683.0),
-        LEVEL3(3000);
+        LEVEL3(3150);
         private double encoderPos;
         private MotorLevels(double encoderPos){
             this.encoderPos = encoderPos;
@@ -161,7 +161,7 @@ public class Outtake {
     public double getAmperage(){return linearSlides.getCurrent(CurrentUnit.MILLIAMPS);}
 
     public void operateSlides(double power){
-        if(linearSlides.getCurrentPosition() >= SLIDES_UPPER_BOUND){
+        /*if(linearSlides.getCurrentPosition() >= SLIDES_UPPER_BOUND){
             if(power < 0){
                 linearSlides.setPower(power);
             } else {
@@ -173,9 +173,9 @@ public class Outtake {
             } else {
                 linearSlides.setPower(0);
             }
-        } else {
+        } else {*/
             linearSlides.setPower(power);
-        }
+        //}
     }
 
     public double getSlidesPosition(){return linearSlides.getCurrentPosition();}
