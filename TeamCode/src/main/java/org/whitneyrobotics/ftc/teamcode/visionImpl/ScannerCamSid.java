@@ -44,8 +44,8 @@ public class ScannerCamSid extends OpenCvPipeline {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
         // CHANGE THESE ACCORDINGLY
         // Division by two since only 180 degrees allowed
-        Scalar lowerBound = new Scalar(69 / 2.0, 100, 100);
-        Scalar upperBound = new Scalar(156 / 2.0, 255, 255);
+        Scalar upperBound = new Scalar(20 / 2.0, 110, 65);
+        Scalar lowerBound = new Scalar(0, 75, 45);
         Core.inRange(mat, lowerBound, upperBound, mat);
 
         leftMat = mat.submat(leftROI);
@@ -61,20 +61,24 @@ public class ScannerCamSid extends OpenCvPipeline {
         Scalar mismatchColor = new Scalar(255,0,0);
 
         if (maxValue == leftValue) {
-            result = Barcode.LEFT;
+            //result = Barcode.LEFT;
             Imgproc.rectangle(input, leftROI, matchColor);
             Imgproc.rectangle(input, midROI, mismatchColor);
             Imgproc.rectangle(input, rightROI, mismatchColor);
         } else if (maxValue == midValue) {
-            result = Barcode.MIDDLE;
+            //result = Barcode.MIDDLE;
             Imgproc.rectangle(input, leftROI, mismatchColor);
             Imgproc.rectangle(input, midROI, matchColor);
             Imgproc.rectangle(input, rightROI, mismatchColor);
-        } else {
-            result = Barcode.RIGHT;
+        } else if (maxValue == rightValue) {
+            //result = Barcode.RIGHT;
             Imgproc.rectangle(input, leftROI, mismatchColor);
             Imgproc.rectangle(input, midROI, mismatchColor);
             Imgproc.rectangle(input, rightROI, matchColor);
+        } else {
+            Imgproc.rectangle(input, leftROI, mismatchColor);
+            Imgproc.rectangle(input, midROI, mismatchColor);
+            Imgproc.rectangle(input, rightROI, mismatchColor);
         }
 
         return input;
@@ -82,7 +86,6 @@ public class ScannerCamSid extends OpenCvPipeline {
 
     public Barcode getResult() {
         // CountDownLatch could be used?
-        while (result == null);
-        return  result;
+        return result;
     }
 }
