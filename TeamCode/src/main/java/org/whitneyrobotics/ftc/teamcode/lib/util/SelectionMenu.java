@@ -200,6 +200,7 @@ public class SelectionMenu {
     public static class Slider extends Prompt {
         private int minInclusive;
         private int maxExclusive;
+        private int step = 1;
 
         public Slider(String caption){
             super(caption);
@@ -214,13 +215,14 @@ public class SelectionMenu {
 
         public Slider setMinInclusive(int minInclusive){this.minInclusive = minInclusive; return this;}
         public Slider setMaxExclusive(int maxExclusive){this.maxExclusive = maxExclusive; return this;}
+        public Slider setStep(int step){this.step = step; return this;}
         public Slider setLimits(int min, int max){this.minInclusive = min; this.maxExclusive = max; return this;}
 
         @Override
-        public Slider init() {super.selectionIterator = new Toggler(maxExclusive-minInclusive); return this;}
+        public Slider init() {super.selectionIterator = new Toggler((int)Math.floor((maxExclusive-minInclusive)/step)); return this;}
 
         @Override
-        public String getPrintableOutput(){return "(" + minInclusive + "-" + (maxExclusive-1) + ") " + (minInclusive+super.selectionIterator.currentState()) + "\n";}
+        public String getPrintableOutput(){return "(" + minInclusive + "-" + (maxExclusive-1) + ") " + (minInclusive+super.selectionIterator.currentState()*step) + "\n";}
         //(1-5)
         //Slider("Review your experience",1,6)
         @Override

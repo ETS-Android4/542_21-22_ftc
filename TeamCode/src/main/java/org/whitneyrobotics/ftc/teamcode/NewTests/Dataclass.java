@@ -16,7 +16,10 @@ public class Dataclass extends OpMode {
     public void init() {
         robotConfig = new boolean[configLength];
         robotConfigObj = new Object[configLength];
-        String[] decodedConfig = DataToolsLite.decode("robotConfig.txt");
+        String[] decodedConfig = {};
+        try {
+            decodedConfig = DataToolsLite.decode("robotConfig.txt");
+        } catch(Exception e){}
         if (decodedConfig.length != configLength) {
             throw new ArrayIndexOutOfBoundsException("The data array needs have 7 items, not " + Integer.toString(decodedConfig.length));
         }

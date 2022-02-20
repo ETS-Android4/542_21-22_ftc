@@ -25,18 +25,18 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public double SPEEDUP_TIME = 0.8;
     public double END_TIME = 1.2;
     //custom class definitions
+    //private PIDFController carouselController;
     private PIDFController carouselController;
     private final Toggler allianceTog = new Toggler(2);
     private final Toggler powerTog = new Toggler(2);
     private final SimpleTimer carouselTimer = new SimpleTimer();
     private int carouselState;
 
-    /**
-     * */
-    public double[] targetRPM = {0,217.5,260}; //find experimentally
+    public double[] targetRPM = {0,148,165}; //find experimentally
 
     @Override
     public void reloadConstants() {
+        RobotConstants.updateConstants();
         carouselController = new PIDFController(RobotConstants.CAROUSEL_CONSTANTS);
     }
 
@@ -89,39 +89,63 @@ public class FeedForwardCarousel implements PIDSubsystem {
      * */
     private void operateCarousel(CarouselStage carouselStage){
         //absolute valued current and target to ignore wheel direction
-        double currentVelocity = Math.abs(wheel.getVelocity(AngleUnit.DEGREES)/6); //rpm
+        double currentVelocity = (wheel.getVelocity(AngleUnit.DEGREES)); //rpm
         currentVelocityDebug = currentVelocity;
-        double targetVelocity = Math.abs(targetRPM[carouselStage.ordinal()]);
+        double targetVelocity = (targetRPM[carouselStage.ordinal()]) * (allianceTog.currentState()==1 ? -1 : 1);
         targetVelocityDebug = targetVelocity;
         double error = targetVelocity - currentVelocity;
         errorDebug = error;
-        carouselController.calculate(error,targetVelocity,69.420); //placeholder for PIDF lambda
-        double power = Functions.map(carouselController.getOutput(),0,RobotConstants.carouselMaxRPM,0,1);
+        carouselController.calculate(error,0,targetVelocity); //placeholder for PIDF lambda
+
+        double power = (carouselController.getOutput() >= 0 ? 1 : -1) * Functions.map(Math.abs(carouselController.getOutput()),0,RobotConstants.carouselMaxRPM,0,1);
+
         operateWheel(power);
     }
 
+    /**
+     * Method to spin the carousel wheel at a certain power, with the alliance rotation orientation being taken into consideration.
+     * @param power Power (between 0 and 1) to feed into the wheel*/
     public void operateWheel(double power){
-        wheel.setPower(power * (allianceTog.currentState())==1 ? -1 : 1);
+        wheel.setPower(power * (allianceTog.currentState()==1 ? -1 : 1));
+    }
+
+    /**
+     * Timer method to automate the operate procedure, along with controlling the toggler-based operate method. This is the primary method in TeleOp
+     * @param start Button to start the timer. This button will become unresponsive while the carousel is running.
+     * @param toggle Button to toggle carousel on/off. This can stop the timed operation prematurely and can also start it.
+     * @see FeedForwardCarousel#operateStates(boolean) */
+    public void operate(boolean start,boolean toggle){
+        if(start && !carouselInProgress){
+            carouselInProgress=true;
+            carouselTimer.set(END_TIME);
+            powerTog.setState(1);
+        }
+        if(carouselTimer.isExpired() || powerTog.currentState() == 0){
+            powerTog.setState(0);
+        }
+        operateStates(toggle); //only for listening to stop commands
     }
 
     /**
      * Code for both autonomous carousel operation and driver-controlled
      * This will automate the carousel process, and due to it's stateful nature, it will <u>not</u> cause conflict with timer-controlled and toggler operation.
-     * @param toggleOnOff Command to listen for for start/stop. If passed with autoStop = true, this will turn the carousel intoa  timer-based operation. Pass in true for autonomous operation.
-     * @param autoStop Option for if you want carousel to stop automatically. Pass in false for toggler, and true for Autonomous and timer-controlled.
+     * @param toggleOnOff Command to listen for for start/stop. Can also be used to halt timer-based operation
      * */
-    public void operate(boolean toggleOnOff, boolean autoStop){
+    public void operateStates(boolean toggleOnOff){
         powerTog.changeState(toggleOnOff);
         switch(carouselState){
             case 0:
-                carouselTimer.set(END_TIME);
                 if(powerTog.currentState() == 1){
+                    carouselController.init(targetRPM[CarouselStage.SLOW.ordinal()]);
                     carouselState++;
+                    if(!carouselInProgress){ //only initialize timer if the carousel is being called from the toggler command, and has not already been dispatched from the timer command
+                        carouselTimer.set(END_TIME);
+                    }
                     carouselInProgress = true;
                 }
                 break;
             case 1:
-                if((carouselTimer.isExpired() && autoStop) || powerTog.currentState() == 0){
+                if(powerTog.currentState() == 0){
                     carouselState++;
                     break;
                 }
@@ -132,7 +156,37 @@ public class FeedForwardCarousel implements PIDSubsystem {
                 }
                 break;
             case 2:
-                powerTog.setState(0); //remove any conflicts with manual stop and auto stop
+                wheel.setPower(0.0);
+                carouselState = 0;
+                carouselTimer.clear();
+                carouselInProgress = false;
+                break;
+            default:
+                carouselState = 0;
+                break;
+        }
+    }
+
+    public void operateAuto(){
+        switch(carouselState){
+            case 0:
+                carouselTimer.set(END_TIME);
+                carouselController.init(targetRPM[CarouselStage.SLOW.ordinal()]);
+                carouselState++;
+                carouselInProgress = true;
+                break;
+            case 1:
+                if(carouselTimer.isExpired()){
+                    carouselState++;
+                    break;
+                }
+                if(carouselTimer.getTimeElapsed()<=SPEEDUP_TIME){
+                    operateCarousel(CarouselStage.SLOW);
+                } else {
+                    operateCarousel(CarouselStage.FAST);
+                }
+                break;
+            case 2:
                 wheel.setPower(0.0);
                 carouselState = 0;
                 carouselInProgress = false;
@@ -141,5 +195,9 @@ public class FeedForwardCarousel implements PIDSubsystem {
                 carouselState = 0;
                 break;
         }
+    }
+
+    public double getPIDFOutput(){
+        return carouselController.getOutput();
     }
 }

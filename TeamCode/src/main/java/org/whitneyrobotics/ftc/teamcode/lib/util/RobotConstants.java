@@ -60,14 +60,14 @@ public class RobotConstants {
     public final static double rotateTestAngle = 180;
     public final static boolean rotateOrientation = true;
 
-    public final static double carouselMaxRPM = 435;
+    public final static double carouselMaxRPM = 370;
     public final static double CAROUSEL_VELOCITY_SLOW = 2120;
     public static double CAROUSEL_SLOW_TIME = 0.8;
     public final static double CAROUSEL_VELOCITY_FAST = 4000;
-    public static ControlConstants.FeedforwardFunction carouselkF = (double targetRPM, double currentVelocity) -> targetRPM/carouselMaxRPM;
-    public static double CAROUSEL_KP = 8.6;
-    public static double CAROUSEL_KI = 0.00091;
-    public static double CAROUSEL_KD = 0.86;
+    public static ControlConstants.FeedforwardFunction carouselkF = (double placeholder, double currentVelocity) -> currentVelocity/carouselMaxRPM;
+    public static double CAROUSEL_KP = 1;
+    public static double CAROUSEL_KI = 0;
+    public static double CAROUSEL_KD = 0;
     public static ControlConstants CAROUSEL_CONSTANTS = new ControlConstants(CAROUSEL_KP,CAROUSEL_KI,CAROUSEL_KD,carouselkF);
 
     public static void updateConstants(){
@@ -75,6 +75,4 @@ public class RobotConstants {
         ROTATE_CONSTANTS = new ControlConstants(ROTATE_KP,ROTATE_KI,ROTATE_KD);
         CAROUSEL_CONSTANTS = new ControlConstants(CAROUSEL_KP,CAROUSEL_KI,CAROUSEL_KD,carouselkF);
     }
-
-
 }

@@ -2,6 +2,7 @@ package org.whitneyrobotics.ftc.teamcode.NewTests;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.whitneyrobotics.ftc.teamcode.framework.DashboardOpMode;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.FeedForwardCarousel;
@@ -14,7 +15,7 @@ public class FeedForwardCarouselTest extends DashboardOpMode {
 
     @Override
     public void init() {
-        initializeDashboard(25);
+        initializeDashboardTelemetry(50);
         carousel = new FeedForwardCarousel(hardwareMap);
     }
 
@@ -31,7 +32,9 @@ public class FeedForwardCarouselTest extends DashboardOpMode {
 
         telemetry.addData("Error",carousel.errorDebug);
         telemetry.addData("Target",carousel.targetVelocityDebug);
-        refreshDashboardPacket();
+        telemetry.addData("Current",carousel.wheel.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("PID Controller Output",carousel.getPIDFOutput());
+        //refreshDashboardPacket();
     }
 
 }

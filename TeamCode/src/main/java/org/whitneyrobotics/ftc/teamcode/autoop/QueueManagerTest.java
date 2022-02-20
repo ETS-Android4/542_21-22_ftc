@@ -4,19 +4,13 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.whitneyrobotics.ftc.teamcode.framework.DashboardOpMode;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Queue.QueueItem;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Queue.QueueManager;
-import org.whitneyrobotics.ftc.teamcode.subsys.Carousel;
 import org.whitneyrobotics.ftc.teamcode.subsys.FeedForwardCarousel;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
 
@@ -31,7 +25,7 @@ public class QueueManagerTest extends DashboardOpMode {
 
     @Override
     public void init() {
-        initializeDashboard(25);
+        initializeDashboardTelemetry(25);
 
         robot = new WHSRobotImpl(hardwareMap);
         carousel = new FeedForwardCarousel(hardwareMap);

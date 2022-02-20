@@ -13,7 +13,7 @@ public class distanceDeleteLater extends DashboardOpMode {
     DistanceSensor distanceSensor;
     @Override
     public void init() {
-        initializeDashboard(10);
+        initializeDashboardTelemetry(10);
         distanceSensor = hardwareMap.get(DistanceSensor.class,"distanceSensor");
     }
 
