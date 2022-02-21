@@ -7,16 +7,18 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.whitneyrobotics.ftc.teamcode.framework.DashboardOpMode;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 @TeleOp(name="Intake Power Test", group="Tests")
-public class IntakePowerTest extends OpMode {
+public class IntakePowerTest extends DashboardOpMode {
     private DcMotorEx surgicalTubes;
     double power = 0;
     private Toggler powerSelector = new Toggler(201);
 
     @Override
     public void init() {
+        initializeDashboardTelemetry(25);
         surgicalTubes = hardwareMap.get(DcMotorEx.class,"intakeMotor");
         surgicalTubes.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         powerSelector.setState(101); //0
@@ -40,6 +42,6 @@ public class IntakePowerTest extends OpMode {
         telemetry.addData("Motor Power",power);
         telemetry.addData("Motor Current in mA",surgicalTubes.getCurrent(CurrentUnit.MILLIAMPS));
         telemetry.addData("Motor Velocity in Ticks/Sec",surgicalTubes.getVelocity());
-        telemetry.addData("Motor velocity in RPM",surgicalTubes.getVelocity(AngleUnit.DEGREES)/360/60); //degress per second to rotations per minute
+        telemetry.addData("Motor velocity in RPM",surgicalTubes.getVelocity(AngleUnit.DEGREES)/6); //degress per second to rotations per minute
     }
 }

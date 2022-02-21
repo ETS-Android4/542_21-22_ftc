@@ -1,5 +1,6 @@
 package org.whitneyrobotics.ftc.teamcode.subsys;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,12 +8,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.whitneyrobotics.ftc.teamcode.framework.PIDSubsystem;
+import org.whitneyrobotics.ftc.teamcode.lib.control.PIDController;
 import org.whitneyrobotics.ftc.teamcode.lib.control.PIDFController;
+import org.whitneyrobotics.ftc.teamcode.lib.motion.RateLimiter;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.RobotConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
+@Config
 public class FeedForwardCarousel implements PIDSubsystem {
     public final DcMotorEx wheel;
     public double currentVelocityDebug;
@@ -21,23 +25,28 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public Alliance alliance;
     public boolean carouselInProgress;
 
+    public static boolean disableFeedForward = false;
+
     //carousel speedup time
     public double SPEEDUP_TIME = 0.8;
     public double END_TIME = 1.2;
     //custom class definitions
     //private PIDFController carouselController;
     private PIDFController carouselController;
+    private PIDController carouselController2;
     private final Toggler allianceTog = new Toggler(2);
     private final Toggler powerTog = new Toggler(2);
     private final SimpleTimer carouselTimer = new SimpleTimer();
     private int carouselState;
+    private RateLimiter rateLimiter = new RateLimiter(0.1,0);
 
-    public double[] targetRPM = {0,148,165}; //find experimentally
+    public double[] targetRPM = {0,1200,1360}; //find experimentally
 
     @Override
     public void reloadConstants() {
         RobotConstants.updateConstants();
         carouselController = new PIDFController(RobotConstants.CAROUSEL_CONSTANTS);
+        carouselController2 = new PIDController(RobotConstants.CAROUSEL_CONSTANTS);
     }
 
     @Override
@@ -59,6 +68,7 @@ public class FeedForwardCarousel implements PIDSubsystem {
         wheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         wheel.setDirection(DcMotorSimple.Direction.REVERSE);
         carouselController = new PIDFController(RobotConstants.CAROUSEL_CONSTANTS);
+        carouselController2 = new PIDController(RobotConstants.CAROUSEL_CONSTANTS);
     }
 
     public void changeAlliance(boolean changeAlliance){
@@ -89,16 +99,17 @@ public class FeedForwardCarousel implements PIDSubsystem {
      * */
     private void operateCarousel(CarouselStage carouselStage){
         //absolute valued current and target to ignore wheel direction
-        double currentVelocity = (wheel.getVelocity(AngleUnit.DEGREES)); //rpm
+        double currentVelocity = (wheel.getVelocity());
         currentVelocityDebug = currentVelocity;
         double targetVelocity = (targetRPM[carouselStage.ordinal()]) * (allianceTog.currentState()==1 ? -1 : 1);
         targetVelocityDebug = targetVelocity;
         double error = targetVelocity - currentVelocity;
         errorDebug = error;
-        carouselController.calculate(error,0,targetVelocity); //placeholder for PIDF lambda
-
-        double power = (carouselController.getOutput() >= 0 ? 1 : -1) * Functions.map(Math.abs(carouselController.getOutput()),0,RobotConstants.carouselMaxRPM,0,1);
-
+        //carouselController.calculate(error,(disableFeedForward? 0:targetVelocity),currentVelocity); //placeholder for PIDF lambda
+        carouselController2.calculate(error);
+        double power = (carouselController.getOutput() >= 0 ? 1 : -1) * Functions.map(Math.abs(carouselController2.getOutput()),0,RobotConstants.carouselMaxRPM,0,1);
+        power = Functions.constrain(power,-0.80,0.80);
+        power = rateLimiter.calculateOutput(power + (disableFeedForward? 0:targetVelocity)/RobotConstants.carouselMaxRPM);
         operateWheel(power);
     }
 
@@ -117,13 +128,13 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public void operate(boolean start,boolean toggle){
         if(start && !carouselInProgress){
             carouselInProgress=true;
-            carouselTimer.set(END_TIME);
             powerTog.setState(1);
         }
-        if(carouselTimer.isExpired() || powerTog.currentState() == 0){
+        /*if(!carouselTimer.isExpired() || powerTog.currentState() == 0) {
+            carouselInProgress = false;
             powerTog.setState(0);
-        }
-        operateStates(toggle); //only for listening to stop commands
+        }*/
+        operateStates(false); //only for listening to stop commands
     }
 
     /**
@@ -135,17 +146,16 @@ public class FeedForwardCarousel implements PIDSubsystem {
         powerTog.changeState(toggleOnOff);
         switch(carouselState){
             case 0:
+                operateWheel(0);
                 if(powerTog.currentState() == 1){
                     carouselController.init(targetRPM[CarouselStage.SLOW.ordinal()]);
                     carouselState++;
-                    if(!carouselInProgress){ //only initialize timer if the carousel is being called from the toggler command, and has not already been dispatched from the timer command
-                        carouselTimer.set(END_TIME);
-                    }
+                    carouselTimer.set(END_TIME);
                     carouselInProgress = true;
                 }
                 break;
             case 1:
-                if(powerTog.currentState() == 0){
+                if(powerTog.currentState() == 0 || !carouselInProgress){
                     carouselState++;
                     break;
                 }
@@ -156,12 +166,12 @@ public class FeedForwardCarousel implements PIDSubsystem {
                 }
                 break;
             case 2:
-                wheel.setPower(0.0);
+                operateWheel(0);
                 carouselState = 0;
-                carouselTimer.clear();
                 carouselInProgress = false;
                 break;
             default:
+                operateWheel(0);
                 carouselState = 0;
                 break;
         }
@@ -170,6 +180,7 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public void operateAuto(){
         switch(carouselState){
             case 0:
+                operateWheel(0);
                 carouselTimer.set(END_TIME);
                 carouselController.init(targetRPM[CarouselStage.SLOW.ordinal()]);
                 carouselState++;
@@ -187,7 +198,7 @@ public class FeedForwardCarousel implements PIDSubsystem {
                 }
                 break;
             case 2:
-                wheel.setPower(0.0);
+                operateWheel(0);
                 carouselState = 0;
                 carouselInProgress = false;
                 break;
@@ -198,6 +209,6 @@ public class FeedForwardCarousel implements PIDSubsystem {
     }
 
     public double getPIDFOutput(){
-        return carouselController.getOutput();
+        return carouselController2.getOutput();
     }
 }

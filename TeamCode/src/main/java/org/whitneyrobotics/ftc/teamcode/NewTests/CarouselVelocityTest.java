@@ -22,6 +22,6 @@ public class CarouselVelocityTest extends DashboardOpMode {
     @Override
     public void loop() {
         wheel.setPower(power);
-        telemetry.addData("Wheel velocity RPM", wheel.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("Wheel velocity RPM", wheel.getVelocity());
     }
 }

@@ -89,7 +89,7 @@ public class OldOuttake2 {
         errorDebug = error;
         outtakeController.calculate(error, 10, currentVelocity);
         double power = Functions.map(outtakeController.getOutput(), 0, RobotConstants.OUTTAKE_MAX_VELOCITY, 0.15, 1.0);
-        power = Functions.constrain(power, 0, 0.82);
+        power = Functions.constrain(power, -0.82, 0.82);
         flywheel.setPower(power);
     }
 

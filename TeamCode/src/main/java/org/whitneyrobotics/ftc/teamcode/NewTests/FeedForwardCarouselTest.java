@@ -21,19 +21,24 @@ public class FeedForwardCarouselTest extends DashboardOpMode {
 
     @Override
     public void loop() {
+        if(gamepad2.back){
+            requestOpModeStop();
+        }
+
         carousel.changeAlliance(gamepad2.y);
         autoEndCarousel.changeState(gamepad2.left_trigger>0.01);
-        if(gamepad2.x){ carousel.reloadConstants(); }
-        if(gamepad2.left_bumper){ autoEndCarousel.setState(0); }
+        if(gamepad2.x) carousel.reloadConstants();
 
-        carousel.operate(gamepad2.left_bumper || gamepad2.left_trigger>0.01, autoEndCarousel.currentState() == 1);
+        carousel.operate(gamepad2.left_bumper,gamepad2.left_trigger>0.01);
+        carousel.operateStates(gamepad2.left_trigger>0.01);
 
         telemetry.addData("Carousel in progress", carousel.carouselInProgress());
 
         telemetry.addData("Error",carousel.errorDebug);
         telemetry.addData("Target",carousel.targetVelocityDebug);
-        telemetry.addData("Current",carousel.wheel.getVelocity(AngleUnit.DEGREES));
+        telemetry.addData("Current",carousel.wheel.getVelocity());
         telemetry.addData("PID Controller Output",carousel.getPIDFOutput());
+        telemetry.addData("Motor power",carousel.wheel.getPower());
         //refreshDashboardPacket();
     }
 
