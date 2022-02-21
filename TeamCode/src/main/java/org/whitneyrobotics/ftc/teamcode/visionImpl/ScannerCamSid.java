@@ -11,14 +11,6 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class ScannerCamSid extends OpenCvPipeline {
 
-    public double width;
-    public double height;
-
-    public ScannerCamSid(double width, double height){
-        this.width = width;
-        this.height = height;
-    }
-
     public enum Barcode {
         LEFT,
         MIDDLE,
@@ -39,9 +31,9 @@ public class ScannerCamSid extends OpenCvPipeline {
     v
     y+
      */
-    Rect leftROI = new Rect(new Point(0,0), new Point(width / 3.0, height));
-    Rect midROI = new Rect(new Point(width/3.0,0), new Point(2 * (width / 3.0), height));
-    Rect rightROI = new Rect(new Point(2 * (width / 3.0),0), new Point(width, height));
+    Rect leftROI = new Rect(new Point(0,0), new Point(320 / 3.0, 240));
+    Rect midROI = new Rect(new Point(320/3.0,0), new Point(2 * (320 / 3.0), 240));
+    Rect rightROI = new Rect(new Point(2 * (320 / 3.0),0), new Point(320, 240));
 
     // Could pass in telemetry into constructor for use in class.
 
@@ -70,25 +62,24 @@ public class ScannerCamSid extends OpenCvPipeline {
 
         if (maxValue == leftValue) {
             //result = Barcode.LEFT;
-            Imgproc.rectangle(input, leftROI, matchColor,3);
-            Imgproc.rectangle(input, midROI, mismatchColor,3);
-            Imgproc.rectangle(input, rightROI, mismatchColor,3);
+            Imgproc.rectangle(input, leftROI, matchColor, 3);
+            Imgproc.rectangle(input, midROI, mismatchColor, 3);
+            Imgproc.rectangle(input, rightROI, mismatchColor, 3);
         } else if (maxValue == midValue) {
             //result = Barcode.MIDDLE;
-            Imgproc.rectangle(input, leftROI, mismatchColor,3);
-            Imgproc.rectangle(input, midROI, matchColor,3);
-            Imgproc.rectangle(input, rightROI, mismatchColor,3);
+            Imgproc.rectangle(input, leftROI, mismatchColor, 3);
+            Imgproc.rectangle(input, midROI, matchColor, 3);
+            Imgproc.rectangle(input, rightROI, mismatchColor, 3);
         } else if (maxValue == rightValue) {
             //result = Barcode.RIGHT;
-            Imgproc.rectangle(input, leftROI, mismatchColor,3);
-            Imgproc.rectangle(input, midROI, mismatchColor,3);
-            Imgproc.rectangle(input, rightROI, matchColor,3);
+            Imgproc.rectangle(input, leftROI, mismatchColor, 3);
+            Imgproc.rectangle(input, midROI, mismatchColor, 3);
+            Imgproc.rectangle(input, rightROI, matchColor, 3);
         } else {
-            Imgproc.rectangle(input, leftROI, mismatchColor);
-            Imgproc.rectangle(input, midROI, mismatchColor);
-            Imgproc.rectangle(input, rightROI, mismatchColor);
+            Imgproc.rectangle(input, leftROI, mismatchColor, 3);
+            Imgproc.rectangle(input, midROI, mismatchColor, 3);
+            Imgproc.rectangle(input, rightROI, mismatchColor, 3);
         }
-        Imgproc.putText(input,String.format("Max Value: %d", maxValue),new Point(10,10),0,12,new Scalar(58,100,42),4);
 
         return input;
     }
