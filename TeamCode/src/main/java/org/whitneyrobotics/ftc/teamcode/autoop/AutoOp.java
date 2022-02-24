@@ -435,7 +435,8 @@ public class AutoOp extends OpMode {
                             }
                             break;
                         case 2:
-                            robot.intake.autoOperate(1.5,false);
+//                            robot.intake.autoOperate(1.5,false);
+
                             switch(superSubState){
                                 case 0:
                                     robot.driveToTarget(warehouse[STARTING_ALLIANCE], false);
@@ -444,6 +445,7 @@ public class AutoOp extends OpMode {
                                     }
                                     break;
                                 case 1:
+                                    robot.intake.autoOperate(1.5,false);
                                     if(!robot.intake.autoIntakeInProgress){
                                         superSubState=0;
                                         subState++;
@@ -592,6 +594,7 @@ public class AutoOp extends OpMode {
         }
         telemetry.addData("Current state: ",stateNames[state]);
         telemetry.addData("Substate: ", subState);
+        telemetry.addData("Supersubstate: ", superSubState);
         telemetry.addData("Starting Side",(STARTING_SIDE==BOTTOM) ? "BOTTOM" : "TOP");
         telemetry.addData("Starting Alliance",(STARTING_ALLIANCE == 0) ? "RED" : "BLUE");
         telemetry.addData("Estimated Position",String.format("%s,%s",robot.getCoordinate().getX(),robot.getCoordinate().getY()));
