@@ -44,8 +44,9 @@ public class ScannerCamSid extends OpenCvPipeline {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
         // CHANGE THESE ACCORDINGLY
         // Division by two since only 180 degrees allowed
-        Scalar upperBound = new Scalar(20 / 2.0, 110, 65);
-        Scalar lowerBound = new Scalar(0, 75, 45);
+        int[] color = {95, 85, 61};
+        Scalar upperBound = new Scalar(color[0] / 2.0 + 30, color[1] + 30, color[2] + 30);
+        Scalar lowerBound = new Scalar(color[0] / 2.0 - 30, color[1] - 30, color[2] - 30);
         Core.inRange(mat, lowerBound, upperBound, mat);
 
         leftMat = mat.submat(leftROI);
@@ -61,21 +62,22 @@ public class ScannerCamSid extends OpenCvPipeline {
         Scalar mismatchColor = new Scalar(255,0,0);
 
         if (maxValue == leftValue) {
-            //result = Barcode.LEFT;
+            result = Barcode.LEFT;
             Imgproc.rectangle(input, leftROI, matchColor, 3);
             Imgproc.rectangle(input, midROI, mismatchColor, 3);
             Imgproc.rectangle(input, rightROI, mismatchColor, 3);
         } else if (maxValue == midValue) {
-            //result = Barcode.MIDDLE;
+            result = Barcode.MIDDLE;
             Imgproc.rectangle(input, leftROI, mismatchColor, 3);
             Imgproc.rectangle(input, midROI, matchColor, 3);
             Imgproc.rectangle(input, rightROI, mismatchColor, 3);
         } else if (maxValue == rightValue) {
-            //result = Barcode.RIGHT;
+            result = Barcode.RIGHT;
             Imgproc.rectangle(input, leftROI, mismatchColor, 3);
             Imgproc.rectangle(input, midROI, mismatchColor, 3);
             Imgproc.rectangle(input, rightROI, matchColor, 3);
         } else {
+            result = Barcode.LEFT;
             Imgproc.rectangle(input, leftROI, mismatchColor, 3);
             Imgproc.rectangle(input, midROI, mismatchColor, 3);
             Imgproc.rectangle(input, rightROI, mismatchColor, 3);
