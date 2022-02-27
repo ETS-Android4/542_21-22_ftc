@@ -33,7 +33,11 @@ public class CameraAutoSid extends DashboardOpMode {
 
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
                 startDriverStationWebcamStream(webcam);
+<<<<<<< HEAD
                 FtcDashboard.getInstance().startCameraStream(webcam, webcam.getCurrentPipelineMaxFps());
+=======
+                dashboard.startCameraStream(webcam, webcam.getCurrentPipelineMaxFps());
+>>>>>>> master
             }
 
             @Override
@@ -53,8 +57,13 @@ public class CameraAutoSid extends DashboardOpMode {
 
     @Override
     public void loop() {
+<<<<<<< HEAD
         telemetry.addData("scanned in init",scanLevel);
         telemetry.addData("detecting",(scanner.getResult()!=null?scanner.getResult().name():"none"));
+=======
+        telemetry.addData("scanned",scanLevel);
+        telemetry.addData("Currently seeing",scanner.getResult().name());
+>>>>>>> master
 
     }
 }
