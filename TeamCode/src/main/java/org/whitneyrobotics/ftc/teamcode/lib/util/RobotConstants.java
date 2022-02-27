@@ -65,9 +65,9 @@ public class RobotConstants {
     public static double CAROUSEL_SLOW_TIME = 0.8;
     public final static double CAROUSEL_VELOCITY_FAST = 4000;
     public static ControlConstants.FeedforwardFunction carouselkF = (double target, double currentVelocity) -> target/carouselMaxRPM/*target/carouselMaxRPM*/;
-    public static double CAROUSEL_KP = 1.2;
+    public static double CAROUSEL_KP = 0.9;
     public static double CAROUSEL_KI = 0;
-    public static double CAROUSEL_KD = 0;
+    public static double CAROUSEL_KD = 0.02;
     public static ControlConstants CAROUSEL_CONSTANTS = new ControlConstants(CAROUSEL_KP,CAROUSEL_KI,CAROUSEL_KD,carouselkF);
 
     public static void updateConstants(){

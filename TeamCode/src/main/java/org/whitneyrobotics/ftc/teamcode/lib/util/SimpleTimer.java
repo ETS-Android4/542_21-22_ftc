@@ -12,6 +12,7 @@ public class SimpleTimer
 {
 
     public double expirationTime; //in seconds
+    public double startTime;
 
     public SimpleTimer()
     {
@@ -20,7 +21,8 @@ public class SimpleTimer
 
     public void set(double timerDuration)
     {
-        double currentTime = getTime(); //time in seconds
+        double currentTime = System.currentTimeMillis() / 1000; //time in seconds
+        startTime = currentTime;
         expirationTime = currentTime + timerDuration;
     }
 
@@ -29,7 +31,7 @@ public class SimpleTimer
     }
 
     public double getTime(){
-        return (double) System.currentTimeMillis() / 1000;
+        return (double) System.currentTimeMillis() / 1000 - startTime;
     }
 
     public double getTimeElapsed(){
@@ -39,7 +41,7 @@ public class SimpleTimer
     public boolean isExpired()
     {
         //DbgLog.msg("whs isExpired entered");
-        double currentTime = getTime();//(double) System.currentTimeMillis() / 1000; //time in seconds
+        double currentTime = System.currentTimeMillis() / 1000;//(double) System.currentTimeMillis() / 1000; //time in seconds
         //DbgLog.msg("whs currentTime found");
         if(expirationTime < currentTime)
         {

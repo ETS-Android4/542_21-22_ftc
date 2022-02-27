@@ -38,7 +38,7 @@ public class CameraAutoSid extends DashboardOpMode {
 
             @Override
             public void onError(int errorCode) {
-
+                telemetry.addLine(String.valueOf(errorCode));
             }
         });
     }

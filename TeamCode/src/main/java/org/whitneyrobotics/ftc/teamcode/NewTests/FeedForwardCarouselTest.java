@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.whitneyrobotics.ftc.teamcode.framework.DashboardOpMode;
+import org.whitneyrobotics.ftc.teamcode.lib.util.Timer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.FeedForwardCarousel;
 
@@ -21,16 +22,14 @@ public class FeedForwardCarouselTest extends DashboardOpMode {
 
     @Override
     public void loop() {
-        if(gamepad2.back){
+        if (gamepad2.back) {
             requestOpModeStop();
         }
 
         carousel.changeAlliance(gamepad2.y);
-        autoEndCarousel.changeState(gamepad2.left_trigger>0.01);
-        if(gamepad2.x) carousel.reloadConstants();
+        if (gamepad2.x) carousel.reloadConstants();
 
-        carousel.operate(gamepad2.left_bumper,gamepad2.left_trigger>0.01);
-        carousel.operateStates(gamepad2.left_trigger>0.01);
+        carousel.operate(gamepad2.left_bumper||gamepad2.left_trigger>0.01,gamepad2.left_bumper);
 
         telemetry.addData("Carousel in progress", carousel.carouselInProgress());
 
@@ -39,7 +38,9 @@ public class FeedForwardCarouselTest extends DashboardOpMode {
         telemetry.addData("Current",carousel.wheel.getVelocity());
         telemetry.addData("PID Controller Output",carousel.getPIDFOutput());
         telemetry.addData("Motor power",carousel.wheel.getPower());
+        telemetry.addData("Elapsed Time",carousel.getTime());
+        telemetry.addData("Stage",carousel.stateDebug);
+        telemetry.addData("Use timer",carousel.timedEnd);
         //refreshDashboardPacket();
     }
-
 }
