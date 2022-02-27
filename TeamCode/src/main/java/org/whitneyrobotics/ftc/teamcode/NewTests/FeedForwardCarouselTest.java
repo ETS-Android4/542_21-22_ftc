@@ -29,7 +29,7 @@ public class FeedForwardCarouselTest extends DashboardOpMode {
         carousel.changeAlliance(gamepad2.y);
         if (gamepad2.x) carousel.reloadConstants();
 
-        carousel.operate(gamepad2.left_bumper||gamepad2.left_trigger>0.01,gamepad1.left_bumper);
+        carousel.operate(gamepad2.left_bumper||gamepad2.left_trigger>0.01,gamepad2.left_bumper);
 
         telemetry.addData("Carousel in progress", carousel.carouselInProgress());
 
@@ -38,6 +38,9 @@ public class FeedForwardCarouselTest extends DashboardOpMode {
         telemetry.addData("Current",carousel.wheel.getVelocity());
         telemetry.addData("PID Controller Output",carousel.getPIDFOutput());
         telemetry.addData("Motor power",carousel.wheel.getPower());
+        telemetry.addData("Elapsed Time",carousel.getTime());
+        telemetry.addData("Stage",carousel.stateDebug);
+        telemetry.addData("Use timer",carousel.timedEnd);
         //refreshDashboardPacket();
     }
 }

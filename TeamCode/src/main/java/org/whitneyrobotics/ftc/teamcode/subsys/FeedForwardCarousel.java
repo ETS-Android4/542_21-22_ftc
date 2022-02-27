@@ -26,12 +26,13 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public Alliance alliance;
     public boolean carouselInProgress;
     public boolean timedEnd = false;
+    public String stateDebug;
 
     public static boolean disableFeedForward = false;
 
     //carousel speedup time
-    public double SPEEDUP_TIME = 0.8;
-    public double END_TIME = 1.2;
+    public double SPEEDUP_TIME = 2.5;
+    public double END_TIME = 5;
     //custom class definitions
     //private PIDFController carouselController;
     private PIDFController carouselController;
@@ -101,6 +102,7 @@ public class FeedForwardCarousel implements PIDSubsystem {
      * @param carouselStage The specific stage of the carousel operation
      * */
     public void operateCarousel(CarouselStage carouselStage){
+        stateDebug = carouselStage.name();
         //absolute valued current and target to ignore wheel direction
         double currentVelocity = (wheel.getVelocity());
         currentVelocityDebug = currentVelocity;
@@ -216,10 +218,13 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public void operate (boolean toggle, boolean useTimer){
         powerTog.changeState(toggle);
                 if (powerTog.currentState() == 0) {
+                    targetVelocityDebug=0;
+                    stateDebug = "Idle";
+                    carouselTimer.clear();
                     carouselTimer.set(END_TIME);
                     carouselInProgress = false;
                     timedEnd = false;
-                    operateCarousel(CarouselStage.OFF);
+                    wheel.setPower(0);
                 } else {
                     if(useTimer){
                         timedEnd=true;
@@ -228,15 +233,19 @@ public class FeedForwardCarousel implements PIDSubsystem {
                     if (timedEnd && carouselTimer.isExpired()) {
                         powerTog.setState(0);
                     }
-                    if (carouselTimer.getTime() > SPEEDUP_TIME){
-                        operateCarousel(FeedForwardCarousel.CarouselStage.FAST);
-                    }  else{
-                    operateCarousel(FeedForwardCarousel.CarouselStage.SLOW);
+                    if (carouselTimer.getTime() <= SPEEDUP_TIME){
+                        operateCarousel(FeedForwardCarousel.CarouselStage.SLOW);
+                    }  else {
+                    operateCarousel(FeedForwardCarousel.CarouselStage.FAST);
                     }
                 }
     }
 
     public double getPIDFOutput(){
         return carouselController2.getOutput();
+    }
+
+    public double getTime(){
+        return carouselTimer.getTime();
     }
 }
