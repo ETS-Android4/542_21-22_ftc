@@ -31,6 +31,9 @@ public class WHSTeleOp extends OpMode {
     private int countdownState = 0;
     private boolean useCountdown = false;
 
+    private boolean rotateCommand = false;
+    private boolean rotateBackwards = false;
+
     private boolean[] notificationsPushed = {false, false}; //first for endgame, second for match end
     private double[] notificationTimes = {90.0,120.0};
     Gamepad.RumbleEffect endgame = new Gamepad.RumbleEffect.Builder()
@@ -176,17 +179,35 @@ public class WHSTeleOp extends OpMode {
                     telemetry.addLine("*fanfare*");
                 }
                 if (gamepad1.back) {
-                    //robot.setInitialCoordinate(new Coordinate(0, 0, 0));
+                    robot.drivetrain.switchFieldCentric(gamepad1.back);
                 }
-                robot.drivetrain.switchFieldCentric(gamepad1.back);
-
                 //experimental feature
                 robot.drivetrain.brake(gamepad1.left_trigger);
 
-                if (gamepad1.left_bumper) {
-                    robot.drivetrain.operateMecanumDrive(-gamepad1.left_stick_x / 3, gamepad1.left_stick_y / 3, -gamepad1.right_stick_x / 3, robot.getCoordinate().getHeading());
-                } else {
-                    robot.drivetrain.operateMecanumDriveScaled(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, robot.getCoordinate().getHeading());
+                if(gamepad1.a){
+                    rotateCommand=true;
+                    rotateBackwards = false;
+                } else if(gamepad1.b){
+                    rotateCommand = true;
+                    rotateBackwards=true;
+                } else if(gamepad1.x){
+                    rotateCommand = false;
+                }
+
+                if(rotateCommand){
+                    robot.rotateToTarget(0,rotateBackwards );
+                }
+                if(!rotateCommand){
+                    if (gamepad1.left_bumper) {
+                        robot.drivetrain.operateMecanumDrive(-gamepad1.left_stick_x / 3, gamepad1.left_stick_y / 3, -gamepad1.right_stick_x / 3, robot.getCoordinate().getHeading());
+                    } else {
+                        robot.drivetrain.operateMecanumDriveScaled(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, robot.getCoordinate().getHeading());
+                    }
+                }
+
+                if(Math.abs(gamepad1.left_stick_x)<0.05 || Math.abs(gamepad1.left_stick_y)<0.05 || Math.abs(gamepad1.right_stick_x) < 0.05 || Math.abs(gamepad1.right_stick_y) < 0.05 || !robot.rotateToTargetInProgress() || gamepad1.x){
+                    rotateCommand = false;
+                    robot.firstRotateLoop = false;
                 }
                 // Intake
                 robot.intake.operate(gamepad1.right_bumper || gamepad2.right_bumper, gamepad1.right_trigger > 0.05 || gamepad2.right_trigger > 0.05); //just so player 2 can reverse

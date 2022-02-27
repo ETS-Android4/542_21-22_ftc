@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,6 +25,7 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public double errorDebug;
     public Alliance alliance;
     public boolean carouselInProgress;
+    public boolean timedEnd = false;
 
     public static boolean disableFeedForward = false;
 
@@ -38,7 +40,8 @@ public class FeedForwardCarousel implements PIDSubsystem {
     private final Toggler powerTog = new Toggler(2);
     private final SimpleTimer carouselTimer = new SimpleTimer();
     private int carouselState;
-    private RateLimiter rateLimiter = new RateLimiter(0.1,0);
+
+    private int manualState = 0;
 
     public double[] targetRPM = {0,1200,1360}; //find experimentally
 
@@ -97,7 +100,7 @@ public class FeedForwardCarousel implements PIDSubsystem {
      * Operates the carousel with the speed specified by the specific CarouselStage enum.
      * @param carouselStage The specific stage of the carousel operation
      * */
-    private void operateCarousel(CarouselStage carouselStage){
+    public void operateCarousel(CarouselStage carouselStage){
         //absolute valued current and target to ignore wheel direction
         double currentVelocity = (wheel.getVelocity());
         currentVelocityDebug = currentVelocity;
@@ -108,8 +111,8 @@ public class FeedForwardCarousel implements PIDSubsystem {
         //carouselController.calculate(error,(disableFeedForward? 0:targetVelocity),currentVelocity); //placeholder for PIDF lambda
         carouselController2.calculate(error);
         double power = (carouselController.getOutput() >= 0 ? 1 : -1) * Functions.map(Math.abs(carouselController2.getOutput()),0,RobotConstants.carouselMaxRPM,0,1);
-        power = Functions.constrain(power,-0.80,0.80);
-        power = rateLimiter.calculateOutput(power + (disableFeedForward? 0:targetVelocity)/RobotConstants.carouselMaxRPM);
+        power = (power + (disableFeedForward? 0:targetVelocity)/RobotConstants.carouselMaxRPM);
+        power = Functions.constrain(power,-0.60,0.60);
         operateWheel(power);
     }
 
@@ -125,17 +128,17 @@ public class FeedForwardCarousel implements PIDSubsystem {
      * @param start Button to start the timer. This button will become unresponsive while the carousel is running.
      * @param toggle Button to toggle carousel on/off. This can stop the timed operation prematurely and can also start it.
      * @see FeedForwardCarousel#operateStates(boolean) */
-    public void operate(boolean start,boolean toggle){
+    /*public void operate(boolean start,boolean toggle){
         if(start && !carouselInProgress){
             carouselInProgress=true;
             powerTog.setState(1);
         }
-        /*if(!carouselTimer.isExpired() || powerTog.currentState() == 0) {
+        if(!carouselTimer.isExpired()) {
             carouselInProgress = false;
             powerTog.setState(0);
-        }*/
+        }
         operateStates(false); //only for listening to stop commands
-    }
+    }*/
 
     /**
      * Code for both autonomous carousel operation and driver-controlled
@@ -144,6 +147,9 @@ public class FeedForwardCarousel implements PIDSubsystem {
      * */
     public void operateStates(boolean toggleOnOff){
         powerTog.changeState(toggleOnOff);
+        if(powerTog.currentState() == 0){
+            carouselState = 0;
+        }
         switch(carouselState){
             case 0:
                 operateWheel(0);
@@ -206,6 +212,28 @@ public class FeedForwardCarousel implements PIDSubsystem {
                 carouselState = 0;
                 break;
         }
+    }
+    public void operate (boolean toggle, boolean useTimer){
+        powerTog.changeState(toggle);
+                if (powerTog.currentState() == 0) {
+                    carouselTimer.set(END_TIME);
+                    carouselInProgress = false;
+                    timedEnd = false;
+                    operateCarousel(CarouselStage.OFF);
+                } else {
+                    if(useTimer){
+                        timedEnd=true;
+                    }
+                    carouselInProgress = true;
+                    if (timedEnd && carouselTimer.isExpired()) {
+                        powerTog.setState(0);
+                    }
+                    if (carouselTimer.getTime() > SPEEDUP_TIME){
+                        operateCarousel(FeedForwardCarousel.CarouselStage.FAST);
+                    }  else{
+                    operateCarousel(FeedForwardCarousel.CarouselStage.SLOW);
+                    }
+                }
     }
 
     public double getPIDFOutput(){

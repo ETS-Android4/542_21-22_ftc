@@ -19,7 +19,7 @@ public class CameraAutoSid extends DashboardOpMode {
 
     @Override
     public void init() {
-        //initializeDashboard(50);
+        initializeDashboardTelemetry(50);
         //int cameraMoniterViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMoniterViewId");
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "pycam"));
 
@@ -31,11 +31,13 @@ public class CameraAutoSid extends DashboardOpMode {
             @Override
             public void onOpened() {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                startDriverStationWebcamStream(webcam);
+                dashboard.startCameraStream(webcam, webcam.getCurrentPipelineMaxFps());
             }
 
             @Override
             public void onError(int errorCode) {
-
+                telemetry.addLine(String.valueOf(errorCode));
             }
         });
     }
@@ -51,6 +53,7 @@ public class CameraAutoSid extends DashboardOpMode {
     @Override
     public void loop() {
         telemetry.addData("scanned",scanLevel);
-        FtcDashboard.getInstance().startCameraStream(webcam, webcam.getCurrentPipelineMaxFps());
+        telemetry.addData("Currently seeing",scanner.getResult().name());
+
     }
 }
