@@ -12,11 +12,22 @@ public class Voltage extends OpMode {
 
     @Override
     public void init() {
-        voltageSensor = hardwareMap.get(VoltageSensor.class, "Motor Controller 1");
+        //voltageSensor = hardwareMap.get(VoltageSensor.class, "Motor Controller 1");
     }
 
     @Override
     public void loop() {
-        telemetry.addData("voltage",voltageSensor.getVoltage());
+        telemetry.addData("voltage", getBatteryVoltage());
+    }
+
+    public double getBatteryVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0) {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
     }
 }

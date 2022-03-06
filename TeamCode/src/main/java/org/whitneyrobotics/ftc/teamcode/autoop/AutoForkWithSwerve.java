@@ -356,8 +356,8 @@ public class AutoForkWithSwerve extends OpMode {
                                 boolean checkBlue = ((STARTING_ALLIANCE) == BLUE) ? true : false;
                                 tempHeading = robot.getCoordinate().getHeading();
                                 //robot.drivetrain.operate(-0.02,-0.02);
-                                robot.carousel.operateAuto(checkBlue);
-                                if (!robot.carousel.isTimerCarouselInProgress()){
+                                robot.carousel.operateAuto();
+                                if (!robot.carousel.carouselInProgress()){
                                     subState++;
                                 }
                                 break;

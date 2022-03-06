@@ -4,20 +4,29 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
+import org.whitneyrobotics.ftc.teamcode.framework.DashboardOpMode;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Coordinate;
 import org.whitneyrobotics.ftc.teamcode.lib.geometry.Position;
 import org.whitneyrobotics.ftc.teamcode.lib.util.DataToolsLite;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.subsys.WHSRobotImpl;
+import org.whitneyrobotics.ftc.teamcode.visionImpl.BarcodeScanner;
 
 import java.util.ArrayList;
 
 @Autonomous (name="WHS Freight Frenzy Auto",preselectTeleOp = "WHS TeleOp")
-public class AutoOp extends OpMode {
+public class AutoOp extends DashboardOpMode {
 
     public WHSRobotImpl robot;
 
@@ -46,6 +55,7 @@ public class AutoOp extends OpMode {
     int STARTING_ALLIANCE = RED;
     int STARTING_SIDE = BOTTOM;
 
+    private boolean useScanner = false;
     private int scanLevel = 3;
     private int numCycles = 0;
     private int cycleCounter = 0;
@@ -125,6 +135,11 @@ public class AutoOp extends OpMode {
 
     private TFObjectDetector tfod;
 
+    //Vision
+    PtzControl ptz;
+    OpenCvWebcam webcam;
+    BarcodeScanner scanner = new BarcodeScanner(1280,720);
+
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -147,20 +162,49 @@ public class AutoOp extends OpMode {
 
     @Override
     public void init() {
-        telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry(),telemetry);
-        telemetry.setMsTransmissionInterval(10);
+       initializeDashboardTelemetry(10);
         robot = new WHSRobotImpl(hardwareMap);
         robot.drivetrain.resetEncoders();
         // add outtake reset
         defineStatesEnabled();
 
+        if(useScanner){
+            webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "pycam"));
+
+            webcam.setPipeline(scanner);
+
+            webcam.setMillisecondsPermissionTimeout(2500);
+
+            webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                @Override
+                public void onOpened() {
+                    ptz = webcam.getPtzControl();
+                    PtzControl.PanTiltHolder ptzHolder= new PtzControl.PanTiltHolder();
+                    ptzHolder.pan = 2;
+                    ptz.setPanTilt(ptzHolder);
+                    ptz.setZoom(2);
+                    webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                    dashboard.startCameraStream(webcam, webcam.getCurrentPipelineMaxFps());
+                    startDriverStationWebcamStream(webcam);
+                }
+
+                @Override
+                public void onError(int errorCode) {
+                    RobotLog.addGlobalWarningMessage("Camera failed to open with error code " + errorCode);
+                    telemetry.addLine(String.valueOf(errorCode));
+                    requestOpModeStop();
+                }
+            });
+        }
+
         AutoSwervePositions.instantiatePaths();
         AutoSwervePositions.generateAutoPaths();
 
-
         try {
             String[] unformattedData = DataToolsLite.decode("autoConfig.txt");
+            STARTING_ALLIANCE = (int) Integer.parseInt(unformattedData[0]);
             STARTING_SIDE = (int) Integer.parseInt(unformattedData[1]);
+            useScanner = (boolean) Boolean.parseBoolean(unformattedData[2]);
             stateEnabled[ROTATE_CAROUSEL] = (boolean) Boolean.parseBoolean(unformattedData[3]);
             stateEnabled[PRELOAD] = (boolean) Boolean.parseBoolean(unformattedData[4]);
             stateEnabled[WAREHOUSE] = (boolean) Boolean.parseBoolean(unformattedData[5]);
@@ -170,6 +214,8 @@ public class AutoOp extends OpMode {
         } catch(Exception e){
             telemetry.addData("Data read threw an error","Reverted back to defaults");
         }
+
+        robot.carousel.setAlliance(STARTING_ALLIANCE);
 
         // Begin Positions
         startingPositions[RED][BOTTOM] = new Position(-1676.4,774.7);
@@ -245,26 +291,13 @@ public class AutoOp extends OpMode {
         robot.setInitialCoordinate(initial);
     }
 
-/*@Override
-    public void init_loop() {
-        if (tfod != null) {
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
-                telemetry.addData("# Object Detected", updatedRecognitions.size());
-                int i = 0;
-                for (Recognition recognition : updatedRecognitions) {
-                    if (recognition.getLabel() == "Cube" || recognition.getLabel() == "Duck"){
-                        CAMERA_BOTTOM = recognition.getBottom();
-                        CAMERA_LEFT = recognition.getLeft();
-                        CAMERA_TOP = recognition.getTop();
-                        CAMERA_RIGHT = recognition.getRight();
-                    }
-                    i++;
-                }
-                telemetry.update();
-            }
+    @Override
+    public void init_loop(){
+        BarcodeScanner.Barcode result = scanner.getResult();
+        if(result != null && useScanner){
+            scanLevel = result.ordinal();
         }
-    }*/
+    }
 
     @Override
     public void loop() {
@@ -331,8 +364,8 @@ public class AutoOp extends OpMode {
                             boolean checkBlue = ((STARTING_ALLIANCE) == BLUE) ? true : false;
                             tempHeading = robot.getCoordinate().getHeading();
                             //robot.drivetrain.operate(-0.02,-0.02);
-                            robot.carousel.operateAuto(checkBlue);
-                            if (!robot.carousel.isTimerCarouselInProgress()){
+                            robot.carousel.operateAuto();
+                            if (!robot.carousel.carouselInProgress()){
                                 subState++;
                             }
                             break;
@@ -597,6 +630,7 @@ public class AutoOp extends OpMode {
         telemetry.addData("Supersubstate: ", superSubState);
         telemetry.addData("Starting Side",(STARTING_SIDE==BOTTOM) ? "BOTTOM" : "TOP");
         telemetry.addData("Starting Alliance",(STARTING_ALLIANCE == 0) ? "RED" : "BLUE");
+        telemetry.addData("Drop level",scanLevel);
         telemetry.addData("Estimated Position",String.format("%s,%s",robot.getCoordinate().getX(),robot.getCoordinate().getY()));
         telemetry.addData("Heading",robot.getCoordinate().getHeading());
         telemetry.addLine();

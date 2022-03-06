@@ -1,5 +1,7 @@
 package org.whitneyrobotics.ftc.teamcode.lib.geometry;
 
+import java.util.Objects;
+
 /**
  * Class for storing positions on the field
  *
@@ -50,5 +52,23 @@ public class Position {
 
     public void setY(double y) {
         yPos = y;
+    }
+
+    @Override
+    public String toString(){
+        return "(" + xPos + ", " + yPos + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Position position = (Position) o;
+        return Double.compare(position.xPos, xPos) == 0 && Double.compare(position.yPos, yPos) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(xPos, yPos);
     }
 }

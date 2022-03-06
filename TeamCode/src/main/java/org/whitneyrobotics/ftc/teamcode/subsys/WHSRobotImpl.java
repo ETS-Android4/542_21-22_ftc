@@ -15,7 +15,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class WHSRobotImpl {
-    public Carousel carousel;
+    public FeedForwardCarousel carousel;
     public DrivetrainExperimental drivetrain;
     public Outtake outtake;
     public IMU imu;
@@ -76,7 +76,7 @@ public class WHSRobotImpl {
         drivetrain = new DrivetrainExperimental(robotMap);
         intake = new Intake(robotMap);
         outtake = new Outtake(robotMap);
-        carousel = new Carousel(robotMap);
+        carousel = new FeedForwardCarousel(robotMap);
 
         DRIVE_MIN = RobotConstants.drive_min;
         DRIVE_MAX = RobotConstants.drive_max;

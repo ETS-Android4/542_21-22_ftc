@@ -1,10 +1,11 @@
 package org.whitneyrobotics.ftc.teamcode.lib.util;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-import java.util.HashMap;
+import java.io.Serializable;
 
 public class DataToolsLite {
 
@@ -23,6 +24,10 @@ public class DataToolsLite {
             content += String.format("%s=%s,",i,unlabeledData[i]);
         }
         ReadWriteFile.writeFile(AppUtil.getInstance().getSettingsFile(fileName),content);
+    }
+
+    public static void serializableEncode(HardwareMap hardwareMap, String fileName, Object... unlabeledData){
+        ReadWriteFile.writeFile(hardwareMap.appContext.getFilesDir(),fileName,"s");
     }
 
     public static void encode(String fileName, DataTools.Data data){

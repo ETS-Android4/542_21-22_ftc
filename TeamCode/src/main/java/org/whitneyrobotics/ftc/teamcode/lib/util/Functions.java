@@ -17,6 +17,10 @@ import java.util.ArrayList;
  */
 public class Functions {
 
+    public static int randInt(int min, int max){
+        return (int)Math.floor(Math.random()*max + min);
+    }
+
     public static double calculateDistance(Position current, Position target) {
         double distance;
         distance = Math.sqrt(Math.pow(target.getX() - current.getX(), 2) + Math.pow(target.getY() - current.getY(), 2));
