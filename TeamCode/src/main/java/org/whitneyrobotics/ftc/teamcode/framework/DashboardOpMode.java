@@ -8,11 +8,16 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
+import org.firstinspires.ftc.robotcore.internal.opmode.TelemetryImpl;
 
 /**
  * Unified class extension for creating FtcDashboard instances without having to repeat code
  */
 public abstract class DashboardOpMode extends OpMode {
+
+    /**
+     * Boolean on whether or not to use colorTelemetry*/
+    protected boolean useColorTelemetry = false;
     /**
      * FtcDashboard instance
      */
@@ -39,6 +44,79 @@ public abstract class DashboardOpMode extends OpMode {
         telemetryStream.setMsTransmissionInterval(msTransmissionInterval);
         telemetry = telemetryStream;
         return telemetryStream;
+    }
+
+    public static class ColorTelemetryImpl extends TelemetryImpl {
+
+
+        public ColorTelemetryImpl(OpMode opMode) {
+            super(opMode);
+            setDisplayFormat(DisplayFormat.HTML);
+        }
+
+        public void addLine(String colorHex, String msg){
+            addLine(String.format("<p style=\"color: #%s\">%s</p>",colorHex,msg));
+        }
+
+        public void addLine(RGBA color, String msg){
+            addLine(color.toHex(),msg);
+        }
+
+        public static class RGBA {
+            public int R;
+            public int G;
+            public int B;
+            public int A;
+            public RGBA(int R, int G, int B, int A){
+                this.R = R;
+                this.G = G;
+                this.B = B;
+                this.A = A;
+            }
+
+            public String toHex(){
+                String r = padFront(Integer.toHexString(checkRange(R,0,255)),2);
+                String g = padFront(Integer.toHexString(checkRange(G,0,255)),2);
+                String b = padFront(Integer.toHexString(checkRange(B,0,255)),2);
+                String a = padFront(Integer.toHexString(checkRange(A,0,255)),2);
+                return r+g+b+a;
+            }
+
+            public static int checkRange(int value, int min, int max){
+                if(value < min){
+                    return min;
+                } else if (value > max){
+                    return max;
+                }
+                return value;
+            }
+
+            public static String repeat(String s, int times){
+                String result = "";
+                for(int i = 0; i<times; i++){
+                    result += s;
+                }
+                return result;
+            }
+
+            public static String padFront(String val, int idealDigits){
+                int diff = idealDigits - val.length();
+                if (diff > 0){
+                    return repeat("0",idealDigits) + val;
+                }
+                return val;
+            }
+        }
+    }
+
+    protected Telemetry useColorTelemetry(boolean useColor){
+        this.useColorTelemetry = useColor;
+        if(useColorTelemetry){
+            telemetry = new ColorTelemetryImpl(this);
+        } else {
+            telemetry = new TelemetryImpl(this);
+        }
+        return telemetry;
     }
 
     protected void startDriverStationWebcamStream(CameraStreamSource source){

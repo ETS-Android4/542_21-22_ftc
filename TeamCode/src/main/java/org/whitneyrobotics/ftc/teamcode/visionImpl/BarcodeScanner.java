@@ -8,19 +8,48 @@ import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
+/**
+ * Created by Sid
+ * */
+public class BarcodeScanner extends OpenCvPipeline {
 
-public class ScannerCamSid extends OpenCvPipeline {
-
+    /**
+     * Barcode labels
+     * */
     public enum Barcode {
         LEFT,
         MIDDLE,
         RIGHT
     }
 
+    /**
+     * Width of the image
+     * */
+    public double width;
+
+    /**
+     * Height of the image
+     * */
+    public double height;
+
+    /**
+     * Constructs a new barcode scanner, with given resolution
+     * @param w Width of the frame
+     * @param h Height of the frame*/
+    public BarcodeScanner(double w, double h){
+        super();
+        width = w;
+        height = h;
+
+        leftROI = new Rect(new Point(0,0), new Point(width / 3.0, height));
+        midROI = new Rect(new Point(width/3.0,0), new Point(2 * (width / 3.0), height));
+        rightROI = new Rect(new Point(2 * (width / 3.0),0), new Point(width, height));
+
+    }
 
     // Mat is color matrix
-    Mat mat = new Mat();
-    Mat leftMat, midMat, rightMat = new Mat();
+    private Mat mat = new Mat();
+    private Mat leftMat, midMat, rightMat = new Mat();
     /* coordinate system
     origin ---------------> x+
     |
@@ -31,13 +60,18 @@ public class ScannerCamSid extends OpenCvPipeline {
     v
     y+
      */
-    Rect leftROI = new Rect(new Point(0,0), new Point(320 / 3.0, 240));
-    Rect midROI = new Rect(new Point(320/3.0,0), new Point(2 * (320 / 3.0), 240));
-    Rect rightROI = new Rect(new Point(2 * (320 / 3.0),0), new Point(320, 240));
+    private Rect leftROI;
+    private Rect midROI;
+    private Rect rightROI;
 
     // Could pass in telemetry into constructor for use in class.
 
     private Barcode result;
+
+    /**
+     * Implicitly called in OpMode to recognize the barcode
+     * @param input Current frames to process
+     * @return New matrix frame with visual annotations*/
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2RGB);
@@ -82,10 +116,15 @@ public class ScannerCamSid extends OpenCvPipeline {
             Imgproc.rectangle(input, midROI, mismatchColor, 3);
             Imgproc.rectangle(input, rightROI, mismatchColor, 3);
         }
+        Imgproc.putText(input, result.name(), new Point(20,20),0,12.0,new Scalar(255,255,255),2);
 
         return input;
     }
 
+    /**
+     * Gets the last known result of the barcode
+     * @return  The Barcode that is detected
+     * @see Barcode*/
     public Barcode getResult() {
         // CountDownLatch could be used?
         return result;

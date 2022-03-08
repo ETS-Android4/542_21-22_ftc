@@ -48,8 +48,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  *      Use the DPAD to change the selected sound, and the Right Bumper to play it.
  */
 
-@TeleOp(name="SKYSTONE Sounds", group="Concept")
-@Disabled
+@TeleOp(name="SKYSTONE Sounds", group="New Tests")
 public class ConceptSoundsSKYSTONE extends LinearOpMode {
 
     // List of available sound resources

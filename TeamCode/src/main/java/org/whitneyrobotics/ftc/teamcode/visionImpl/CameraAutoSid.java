@@ -1,20 +1,20 @@
 package org.whitneyrobotics.ftc.teamcode.visionImpl;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 import org.whitneyrobotics.ftc.teamcode.framework.DashboardOpMode;
-import org.whitneyrobotics.ftc.teamcode.visionImpl.ScannerCamSid;
+
 @TeleOp(name="Vision Test", group="New Tests")
 public class CameraAutoSid extends DashboardOpMode {
+    PtzControl ptz;
     OpenCvWebcam webcam;
-    ScannerCamSid scanner = new ScannerCamSid();
+    BarcodeScanner scanner = new BarcodeScanner(1280,720);
     double scanLevel = 2;
 
     @Override
@@ -30,10 +30,14 @@ public class CameraAutoSid extends DashboardOpMode {
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-                startDriverStationWebcamStream(webcam);
                 dashboard.startCameraStream(webcam, webcam.getCurrentPipelineMaxFps());
+                ptz = webcam.getPtzControl();
+                PtzControl.PanTiltHolder ptzHolder= new PtzControl.PanTiltHolder();
+                ptzHolder.pan = 2;
+                ptz.setPanTilt(ptzHolder);
+                ptz.setZoom(2);
+                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
+                startDriverStationWebcamStream(webcam);
             }
 
             @Override
@@ -45,7 +49,7 @@ public class CameraAutoSid extends DashboardOpMode {
 
     @Override
     public void init_loop(){
-        ScannerCamSid.Barcode result = scanner.getResult();
+        BarcodeScanner.Barcode result = scanner.getResult();
         if(result != null){
             scanLevel = result.ordinal();
         }
@@ -54,6 +58,7 @@ public class CameraAutoSid extends DashboardOpMode {
     @Override
     public void loop() {
 
+        telemetry.addData("fps",webcam.getCurrentPipelineMaxFps());
         telemetry.addData("scanned in init",scanLevel);
         telemetry.addData("detecting",(scanner.getResult()!=null?scanner.getResult().name():"none"));
 

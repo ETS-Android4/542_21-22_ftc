@@ -311,8 +311,8 @@ public class WHSAutoTest extends OpMode {
                     case 2:
                         boolean checkBlue = ((STARTING_ALLIANCE) == BLUE) ? true : false;
                         //robot.drivetrain.operate(-0.01,-0.01);
-                        robot.carousel.operateAuto(checkBlue);
-                        if (!robot.carousel.isTimerCarouselInProgress()){
+                        robot.carousel.operateAuto();
+                        if (!robot.carousel.carouselInProgress()){
                         subState++;
                         }
                         break;

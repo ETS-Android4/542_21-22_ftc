@@ -232,7 +232,7 @@ public class WHSTeleOp extends OpMode {
             }*/
 
                 //if(gamepad2.a) { robot.robotOuttake.reset(); }
-                robot.carousel.operate(gamepad2.left_bumper, gamepad2.left_trigger > 0.01, gamepad2.y);
+                robot.carousel.operate(gamepad2.left_bumper||gamepad2.left_trigger>0.01,gamepad2.left_bumper);
                 // - Hatch | Servo gate
             /*if(gamepad2.b){
                 autoDropState = 1;
