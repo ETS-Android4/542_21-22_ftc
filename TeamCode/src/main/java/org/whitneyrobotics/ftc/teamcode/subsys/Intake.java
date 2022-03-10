@@ -25,7 +25,7 @@ public class Intake {
 
     public void resetAllEncoder(){
         intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public Intake (HardwareMap hardwareMap){
@@ -116,7 +116,7 @@ public class Intake {
 
     public boolean isReversed(){return isReversed;}
 
-    public double getVelocity(){return (double) intakeMotor.getVelocity();}
-
+    //public double getVelocity(){return (double) intakeMotor.getVelocity();}
+    public double getVelocity(){return 0;}
 }
 
