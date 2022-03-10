@@ -5,12 +5,10 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
-import org.whitneyrobotics.ftc.teamcode.subsys.SussyOuttake;
 
 @TeleOp (name="Outtake Test", group="Tests")
 public class OuttakeTest extends OpMode {
@@ -97,7 +95,8 @@ public class OuttakeTest extends OpMode {
         if(gamepad1.y){kill();}
 
         telemetry.addData("Mode", (modeTog.currentState() == 0) ? "Manual Configure Mode" : "Test Mode");
-        telemetry.addData("Amperage",outtake.getAmperage());
+        telemetry.addData("Amperage (Left)",outtake.getAmperageLeft());
+        telemetry.addData("Amperage (Right)",outtake.getAmperageRight());
         telemetry.addData("Error",outtake.errorDebug);
         telemetry.addData("Encoder Position", outtake.getSlidesPosition());
         telemetry.addData("Current Tier (0-2)", outtake.getTier());
@@ -106,7 +105,8 @@ public class OuttakeTest extends OpMode {
         telemetry.addData("Level 3", level3);
 
         packet.put("Mode", (modeTog.currentState() == 0) ? "Manual Configure Mode" : "Test Mode");
-        packet.put("Amperage",outtake.getAmperage());
+        packet.put("Amperage (Left)",outtake.getAmperageLeft());
+        packet.put("Amperage (Right)",outtake.getAmperageRight());
         packet.put("Error",outtake.errorDebug);
         packet.put("Encoder Position", outtake.getSlidesPosition());
         packet.put("Current Tier (0-2)",outtake.getTier());

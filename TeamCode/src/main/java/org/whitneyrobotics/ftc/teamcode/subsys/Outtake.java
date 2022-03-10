@@ -2,6 +2,7 @@ package org.whitneyrobotics.ftc.teamcode.subsys;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -14,7 +15,8 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Outtake {
     private Servo gate;
-    private DcMotorEx linearSlides;
+    private DcMotorEx linearSlidesLeft;
+    private DcMotorEx linearSlidesRight;
     private boolean useTestPositions = false;
     private boolean gateOverride = false;
 
@@ -23,10 +25,13 @@ public class Outtake {
 
     public Outtake(HardwareMap outtakeMap) {
         gate = outtakeMap.servo.get("gateServo");
-        linearSlides = outtakeMap.get(DcMotorEx.class, "linearSlides");
+        linearSlidesLeft = outtakeMap.get(DcMotorEx.class, "linearSlidesLeft");
+        linearSlidesRight = outtakeMap.get(DcMotorEx.class, "linearSlidesRight");
         gate.setPosition(GatePositions.CLOSE.getPosition());
-        linearSlides.setDirection(DcMotor.Direction.REVERSE);
-        linearSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlidesLeft.setDirection(DcMotor.Direction.REVERSE);
+        linearSlidesLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlidesRight.setDirection(DcMotor.Direction.FORWARD);
+        linearSlidesRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         resetEncoder();
     }
 
@@ -84,9 +89,10 @@ public class Outtake {
         }
     }
 
+
     public void operateWithoutGamepad(int levelIndex) {
         double currentTarget = orderedPositions[levelIndex];
-        double error = currentTarget-linearSlides.getCurrentPosition();
+        double error = currentTarget- getSlidesPosition();
         errorDebug = error;
         if (slidesFirstLoop){
             slidingInProgress = true;
@@ -99,12 +105,14 @@ public class Outtake {
         double power = (slidesController.getOutput() >= 0 ? 1 : -1) * (Functions.map(Math.abs(slidesController.getOutput()), RobotConstants.DEADBAND_SLIDE_TO_TARGET, 3000, RobotConstants.slide_min, RobotConstants.slide_max));
 
         if(Math.abs(error) <= RobotConstants.DEADBAND_SLIDE_TO_TARGET ){
-            linearSlides.setPower(0);
+            linearSlidesLeft.setPower(0);
+            linearSlidesRight.setPower(0);
             slidingInProgress = false;
             slidesFirstLoop = true;
         }
         else {
-            linearSlides.setPower(power);
+            linearSlidesLeft.setPower(power);
+            linearSlidesRight.setPower(power);
             slidingInProgress = true;
         }
     }
@@ -130,7 +138,7 @@ public class Outtake {
 
     public void reset() {
         linearSlidesTog.setState(0);
-        if(Math.abs(linearSlides.getCurrentPosition() - MotorLevels.LEVEL1.getPosition()) > RobotConstants.DEADBAND_SLIDE_TO_TARGET){
+        if(Math.abs(getSlidesPosition() - MotorLevels.LEVEL1.getPosition()) > RobotConstants.DEADBAND_SLIDE_TO_TARGET){
             resetState = 0;
         } else {
             resetState = 1;
@@ -150,15 +158,18 @@ public class Outtake {
     }
 
     public void resetEncoder() {
-        linearSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearSlides.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        linearSlidesLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlidesLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        linearSlidesRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlidesRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public int getTier() { return linearSlidesTog.currentState(); }
 
     public double getServoPosition(){return gate.getPosition();}
 
-    public double getAmperage(){return linearSlides.getCurrent(CurrentUnit.MILLIAMPS);}
+    public double getAmperageLeft(){return linearSlidesLeft.getCurrent(CurrentUnit.MILLIAMPS);}
+    public double getAmperageRight(){return linearSlidesRight.getCurrent(CurrentUnit.MILLIAMPS);}
 
     public void operateSlides(double power){
         /*if(linearSlides.getCurrentPosition() >= SLIDES_UPPER_BOUND){
@@ -174,13 +185,15 @@ public class Outtake {
                 linearSlides.setPower(0);
             }
         } else {*/
-            linearSlides.setPower(power);
+        linearSlidesLeft.setPower(power);
+        linearSlidesRight.setPower(power);
         //}
     }
 
-    public double getSlidesPosition(){return linearSlides.getCurrentPosition();}
+//    public double getSlidesPosition(){return linearSlidesLeft.getCurrentPosition();}
+    public double getSlidesPosition(){return (linearSlidesLeft.getCurrentPosition() + linearSlidesRight.getCurrentPosition()) / 2.0d;}
 
-    public void toggleTestPositions(){useTestPositions = (useTestPositions) ? false : true;}
+    public void toggleTestPositions(){useTestPositions = !(useTestPositions);}
 
     public boolean useTestPositions(){return useTestPositions;}
 
