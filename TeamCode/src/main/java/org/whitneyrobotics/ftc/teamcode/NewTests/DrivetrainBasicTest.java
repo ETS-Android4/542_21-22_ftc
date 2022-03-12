@@ -57,6 +57,10 @@ public class DrivetrainBasicTest extends OpMode {
 
     @Override
     public void loop(){
+        if(gamepad1.back){
+            robot.reloadPID();
+        }
+
         RobotConstants.updateConstants();
         angleSelector.changeState(gamepad1.dpad_right, gamepad1.dpad_left);
         rotateTarget = rotateTargets[angleSelector.currentState()];

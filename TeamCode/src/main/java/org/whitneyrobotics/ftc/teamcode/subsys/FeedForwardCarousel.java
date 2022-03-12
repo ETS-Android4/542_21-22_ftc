@@ -32,8 +32,8 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public static boolean disableFeedForward = false;
 
     //carousel speedup time
-    public double SPEEDUP_TIME = 1.57;
-    public double END_TIME = 2.35;
+    public double SPEEDUP_TIME = 1;
+    public double END_TIME = 1.6;
     //custom class definitions
     //private PIDFController carouselController;
     private PIDFController carouselController;
@@ -45,7 +45,7 @@ public class FeedForwardCarousel implements PIDSubsystem {
 
     private int manualState = 0;
 
-    public double[] targetRPM = {0,1200,1360}; //find experimentally
+    public double[] targetRPM = {0,1840,2250}; //find experimentally
 
     @Override
     public void reloadConstants() {
@@ -122,9 +122,9 @@ public class FeedForwardCarousel implements PIDSubsystem {
         errorDebug = error;
         //carouselController.calculate(error,(disableFeedForward? 0:targetVelocity),currentVelocity); //placeholder for PIDF lambda
         carouselController2.calculate(error);
-        double power = (carouselController.getOutput() >= 0 ? 1 : -1) * Functions.map(Math.abs(carouselController2.getOutput()),0,RobotConstants.carouselMaxRPM,0,1);
+        double power = (carouselController2.getOutput() >= 0 ? 1 : -1) * Functions.map(Math.abs(carouselController2.getOutput()),0,RobotConstants.carouselMaxRPM,0,1);
         power = (power + (disableFeedForward? 0:targetVelocity)/RobotConstants.carouselMaxRPM);
-        power = Functions.constrain(power,-0.60,0.60);
+        power = Functions.constrain(power,-0.80,0.80);
         operateWheel(power);
     }
 
@@ -132,7 +132,7 @@ public class FeedForwardCarousel implements PIDSubsystem {
      * Method to spin the carousel wheel at a certain power, with the alliance rotation orientation being taken into consideration.
      * @param power Power (between 0 and 1) to feed into the wheel*/
     public void operateWheel(double power){
-        wheel.setPower(power * (allianceTog.currentState()==1 ? -1 : 1));
+        wheel.setPower(power /* (allianceTog.currentState()==1 ? -1 : 1)*/);
     }
 
     /**

@@ -19,6 +19,7 @@ public class WHSRobotImplDrivetrainOnly {
     public IMU imu;
     //public Intake robotIntake;
 
+
     SwervePath currentSwervePath;
     public SwerveFollower swerveFollower;
 
@@ -42,6 +43,11 @@ public class WHSRobotImplDrivetrainOnly {
 
     public PIDController rotateController = new PIDController(RobotConstants.ROTATE_CONSTANTS);
     public PIDController driveController = new PIDController(RobotConstants.DRIVE_CONSTANTS);
+
+    public void reloadPID(){
+        rotateController = new PIDController(RobotConstants.ROTATE_CONSTANTS);
+        driveController = new PIDController(RobotConstants.DRIVE_CONSTANTS);
+    }
 
     public boolean firstRotateLoop = true;
     public boolean firstDriveLoop = true;
