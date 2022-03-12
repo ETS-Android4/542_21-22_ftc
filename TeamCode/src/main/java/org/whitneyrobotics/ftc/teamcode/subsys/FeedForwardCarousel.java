@@ -32,8 +32,8 @@ public class FeedForwardCarousel implements PIDSubsystem {
     public static boolean disableFeedForward = false;
 
     //carousel speedup time
-    public double SPEEDUP_TIME = 1;
-    public double END_TIME = 1.5;
+    public double SPEEDUP_TIME = 1.57;
+    public double END_TIME = 2.35;
     //custom class definitions
     //private PIDFController carouselController;
     private PIDFController carouselController;

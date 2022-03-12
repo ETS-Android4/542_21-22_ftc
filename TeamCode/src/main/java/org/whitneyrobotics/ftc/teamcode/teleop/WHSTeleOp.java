@@ -34,6 +34,8 @@ public class WHSTeleOp extends OpMode {
     private boolean rotateCommand = false;
     private boolean rotateBackwards = false;
 
+    private int outtakeAClicks = 0;
+
     private boolean[] notificationsPushed = {false, false}; //first for endgame, second for match end
     private double[] notificationTimes = {90.0,120.0};
     Gamepad.RumbleEffect endgame = new Gamepad.RumbleEffect.Builder()
@@ -63,6 +65,8 @@ public class WHSTeleOp extends OpMode {
 
     @Override
     public void init() {
+        /*Outtake.MotorLevels.LEVEL3.changePosition(840);
+        Outtake.MotorLevels.LEVEL1.changePosition(-30);*/
         telemetry.setAutoClear(false);
         robot = new WHSRobotImpl(hardwareMap);
         try {
@@ -96,6 +100,10 @@ public class WHSTeleOp extends OpMode {
 
     @Override
     public void loop() {
+        if (outtakeAClicks >= 2){
+            Outtake.MotorLevels.LEVEL3.changePosition(840);
+            Outtake.MotorLevels.LEVEL1.changePosition(-30);
+        }
         if(!autoEndTele){
             if(firstTeleMatchLoop){
                 matchTimer.set(150.3);

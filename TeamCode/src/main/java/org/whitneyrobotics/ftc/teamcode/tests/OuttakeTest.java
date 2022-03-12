@@ -25,7 +25,7 @@ public class OuttakeTest extends OpMode {
     public static double level1 = 0.0;
     public static double level1_5 = 238.0;
     public static double level2 = 438;
-    public static double level3 = 890;
+    public static double level3 = 860;
     public static int autoDropState = 1;
 
     @Override

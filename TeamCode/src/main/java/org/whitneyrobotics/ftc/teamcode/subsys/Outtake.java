@@ -20,6 +20,7 @@ public class Outtake {
     private boolean useTestPositions = false;
     private boolean gateOverride = false;
 
+
     private int resetState = 0;
     private int outtakeState = 0;
 
@@ -42,11 +43,11 @@ public class Outtake {
 
     //Emergency Stop Cases
     private static final double SLIDES_UPPER_BOUND = 3500;
-    private static final double SLIDES_LOWER_BOUND = -40;
+    private static final double SLIDES_LOWER_BOUND = -100;
 
     private enum GatePositions{
         CLOSE(0.5),
-        OPEN(0);
+        OPEN(0.2);
         private double position;
         GatePositions(double position){
             this.position = position;
@@ -58,12 +59,13 @@ public class Outtake {
         LEVEL1(0.0),
         LEVEL1_5(238),
         LEVEL2(438),
-        LEVEL3(860);
+        LEVEL3(840);
         private double encoderPos;
         MotorLevels(double encoderPos){
             this.encoderPos = encoderPos;
         }
         public double getPosition(){return this.encoderPos;}
+        public void changePosition(double changePos){this.encoderPos = changePos;}
 
     }
     private double[] orderedPositions = {MotorLevels.LEVEL1.getPosition(), MotorLevels.LEVEL1_5.getPosition(),MotorLevels.LEVEL2.getPosition(),MotorLevels.LEVEL3.getPosition()};

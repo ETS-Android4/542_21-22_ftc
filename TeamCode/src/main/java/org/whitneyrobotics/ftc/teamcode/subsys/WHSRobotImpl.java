@@ -12,6 +12,7 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.Functions;
 import org.whitneyrobotics.ftc.teamcode.lib.util.GamepadListener;
 import org.whitneyrobotics.ftc.teamcode.lib.util.RobotConstants;
 import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
+import org.whitneyrobotics.ftc.teamcode.lib.util.Timer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class WHSRobotImpl {
@@ -27,6 +28,8 @@ public class WHSRobotImpl {
     private Toggler outtakeState = new Toggler(5);
     public Toggler levelSelector = new Toggler(4);
     private Toggler outtakeResetDisabler = new Toggler(2);
+
+    private SimpleTimer miscTimer = new SimpleTimer();
 
     private int outtakeSubState = 0;
     private GamepadListener outtakeListener = new GamepadListener();
@@ -411,6 +414,7 @@ public class WHSRobotImpl {
                     stateDesc = "Depositing";
                     if (outtake.autoDrop() && !override) {
                         outtakeState.setState(4);
+                        miscTimer.set(1000);
                     }
                     break;
                 case 4:
