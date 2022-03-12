@@ -369,7 +369,7 @@ public class WHSRobotImpl {
                 }
 
         }*/
-        if(outtakeListener2.longPress(zeroOuttake,500)){
+        if(outtakeListener2.doublePress(zeroOuttake,500)){
             outtake.resetEncoder();
         }
         if(!outtake.slidingInProgress) {

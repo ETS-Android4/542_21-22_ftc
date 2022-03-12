@@ -36,14 +36,18 @@ public class BarcodeScanner extends OpenCvPipeline {
      * Constructs a new barcode scanner, with given resolution
      * @param w Width of the frame
      * @param h Height of the frame*/
-    public BarcodeScanner(double w, double h){
+    public BarcodeScanner(double w, double h, double... ratios){
         super();
+        if(ratios.length != 3 ) throw new IllegalArgumentException("Barcode scanner must have only 3 ratios for screen divisions");
+        double ratioTotal = ratios.length;
+        double boundaryOne = ((ratios[0] / ratioTotal)*width);
+        double boundaryTwo = ((ratios[0] + ratios[1]) / ratioTotal)*width;
         width = w;
         height = h;
 
-        leftROI = new Rect(new Point(0,0), new Point(width / 3.0, height));
-        midROI = new Rect(new Point(width/3.0,0), new Point(2 * (width / 3.0), height));
-        rightROI = new Rect(new Point(2 * (width / 3.0),0), new Point(width, height));
+        leftROI = new Rect(new Point(0,0), new Point(boundaryOne, height));
+        midROI = new Rect(new Point(boundaryOne,0), new Point(boundaryTwo, height));
+        rightROI = new Rect(new Point(boundaryTwo,0), new Point(width, height));
 
     }
 

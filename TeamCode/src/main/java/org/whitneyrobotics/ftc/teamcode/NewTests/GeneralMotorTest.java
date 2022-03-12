@@ -42,9 +42,10 @@ public class GeneralMotorTest extends OpMode {
         motorTog.changeState(gamepad1.dpad_right || gamepad2.dpad_right, gamepad1.dpad_left || gamepad2.dpad_left);
         if(motors[motorTog.currentState()] != null){
             powerTog.changeState(gamepadListener.shortPress(gamepad1.dpad_up || gamepad2.dpad_up,500), gamepadListener2.shortPress(gamepad1.dpad_down||gamepad2.dpad_down,500));
-            if (gamepadListener.longPress(gamepad1.dpad_up || gamepad1.dpad_down,500)){
+            if (gamepadListener.longPress(gamepad1.dpad_up || gamepad2.dpad_up,500)){
                 powerTog.setState(powerTog.currentState() + 20);
-            } else if (gamepadListener2.longPress(gamepad1.dpad_down || gamepad2.dpad_down,500)){
+            }
+            if (gamepadListener2.longPress(gamepad1.dpad_down || gamepad2.dpad_down,500)){
                 powerTog.setState(powerTog.currentState() - 20);
             }
             onOffTog.changeState(gamepad1.y || gamepad2.y);

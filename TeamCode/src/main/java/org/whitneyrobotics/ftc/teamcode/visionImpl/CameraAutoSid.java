@@ -14,7 +14,7 @@ import org.whitneyrobotics.ftc.teamcode.framework.DashboardOpMode;
 public class CameraAutoSid extends DashboardOpMode {
     PtzControl ptz;
     OpenCvWebcam webcam;
-    BarcodeScanner scanner = new BarcodeScanner(1280,720);
+    BarcodeScanner scanner = new BarcodeScanner(1280,720,1,1,1);
     double scanLevel = 2;
 
     @Override

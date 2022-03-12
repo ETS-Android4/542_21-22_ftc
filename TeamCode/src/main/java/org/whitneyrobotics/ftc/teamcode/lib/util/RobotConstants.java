@@ -30,9 +30,9 @@ public class RobotConstants {
     public static double slide_min = 0.2;
     public static double slide_max = 1;
 
-    public static double SLIDE_KP = 12.4;
-    public static double SLIDE_KI = 0.000035;
-    public static double SLIDE_KD = 0.35;
+    public static double SLIDE_KP = 10;
+    public static double SLIDE_KI = 0;
+    public static double SLIDE_KD = 0;
     public final static ControlConstants SLIDE_CONSTANTS = new ControlConstants(SLIDE_KP,SLIDE_KI,SLIDE_KD);
 
     public static double STRAFE_ROTATE_KP = 0.1;

@@ -84,6 +84,7 @@ public class WHSTeleOp extends OpMode {
             telemetry.addLine("I will notify you about match end at " + notificationTimes[1] + "seconds into TeleOp");
         } catch (Exception e){
             telemetry.addLine("There was a problem decoding some data");
+            telemetry.addLine(e.getMessage());
             System.out.println("There was a problem decoding some data");
         }
         lastRecordedTime=lastRecordedTime = System.nanoTime();
@@ -236,10 +237,10 @@ public class WHSTeleOp extends OpMode {
                 // - Hatch | Servo gate
             /*if(gamepad2.b){
                 autoDropState = 1;
-            }*/
+            }
 
 
-                /*switch(autoDropStateTele){
+                switch(autoDropStateTele){
                     case 0:
                         if(robot.outtake.autoDrop()){
                             autoDropStateTele++;
@@ -259,6 +260,7 @@ public class WHSTeleOp extends OpMode {
                 telemetry.addData("Outtake encoder position",robot.outtake.getSlidesPosition());
                 telemetry.addData("Outtake Level",outtakeLabels[robot.outtake.getTier()]);
                 telemetry.addLine();
+                telemetry.addData("Gate Position", robot.outtake.gate.getPosition());
                 telemetry.addData("Gamepad 2 Back",gamepad2.back);
                 telemetry.addData("Current processing latency: ", (Math.ceil(System.nanoTime()-lastRecordedTime)/1E6) + "ms");
                 telemetry.addData("Time Elapsed",calculateAndFormatTimeElapsed(startTime));

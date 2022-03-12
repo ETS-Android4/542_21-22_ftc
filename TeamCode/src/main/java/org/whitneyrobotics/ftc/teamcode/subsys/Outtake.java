@@ -14,9 +14,9 @@ import org.whitneyrobotics.ftc.teamcode.lib.util.SimpleTimer;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 
 public class Outtake {
-    private Servo gate;
-    private DcMotorEx linearSlidesLeft;
-    private DcMotorEx linearSlidesRight;
+    public Servo gate;
+    public DcMotorEx linearSlidesLeft;
+    public DcMotorEx linearSlidesRight;
     private boolean useTestPositions = false;
     private boolean gateOverride = false;
 
@@ -24,11 +24,11 @@ public class Outtake {
     private int outtakeState = 0;
 
     public Outtake(HardwareMap outtakeMap) {
-        gate = outtakeMap.servo.get("gateServo");
-        linearSlidesLeft = outtakeMap.get(DcMotorEx.class, "linearSlidesLeft");
-        linearSlidesRight = outtakeMap.get(DcMotorEx.class, "linearSlidesRight");
+        gate = outtakeMap.get(Servo.class,"gateServo");
+        linearSlidesLeft = outtakeMap.get(DcMotorEx.class, "outtakeMotorLeft");
+        linearSlidesRight = outtakeMap.get(DcMotorEx.class, "outtakeMotorRight");
         gate.setPosition(GatePositions.CLOSE.getPosition());
-        linearSlidesLeft.setDirection(DcMotor.Direction.REVERSE);
+        //linearSlidesLeft.setDirection(DcMotor.Direction.REVERSE);
         linearSlidesLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlidesRight.setDirection(DcMotor.Direction.FORWARD);
         linearSlidesRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -45,8 +45,8 @@ public class Outtake {
     private static final double SLIDES_LOWER_BOUND = -40;
 
     private enum GatePositions{
-        CLOSE(1),
-        OPEN(0.6);
+        CLOSE(0.5),
+        OPEN(0);
         private double position;
         GatePositions(double position){
             this.position = position;
@@ -56,11 +56,11 @@ public class Outtake {
 
     public enum MotorLevels{
         LEVEL1(0.0),
-        LEVEL1_5(1200),
-        LEVEL2(1683.0),
-        LEVEL3(3150);
+        LEVEL1_5(238),
+        LEVEL2(438),
+        LEVEL3(860);
         private double encoderPos;
-        private MotorLevels(double encoderPos){
+        MotorLevels(double encoderPos){
             this.encoderPos = encoderPos;
         }
         public double getPosition(){return this.encoderPos;}
@@ -92,7 +92,7 @@ public class Outtake {
 
     public void operateWithoutGamepad(int levelIndex) {
         double currentTarget = orderedPositions[levelIndex];
-        double error = currentTarget- getSlidesPosition();
+        double error = currentTarget-getSlidesPosition();
         errorDebug = error;
         if (slidesFirstLoop){
             slidingInProgress = true;
@@ -191,7 +191,7 @@ public class Outtake {
     }
 
 //    public double getSlidesPosition(){return linearSlidesLeft.getCurrentPosition();}
-    public double getSlidesPosition(){return (linearSlidesLeft.getCurrentPosition() + linearSlidesRight.getCurrentPosition()) / 2.0d;}
+    public double getSlidesPosition(){return (-linearSlidesLeft.getCurrentPosition() + linearSlidesRight.getCurrentPosition()) / 2.0d;}
 
     public void toggleTestPositions(){useTestPositions = !(useTestPositions);}
 

@@ -138,7 +138,7 @@ public class AutoOp extends DashboardOpMode {
     //Vision
     PtzControl ptz;
     OpenCvWebcam webcam;
-    BarcodeScanner scanner = new BarcodeScanner(1280,720);
+    BarcodeScanner scanner = new BarcodeScanner(1280,720,1,1,1);
 
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(

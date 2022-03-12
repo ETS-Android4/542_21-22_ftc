@@ -1,6 +1,7 @@
 package org.whitneyrobotics.ftc.teamcode.tests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,23 +10,23 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.whitneyrobotics.ftc.teamcode.lib.util.Toggler;
 import org.whitneyrobotics.ftc.teamcode.subsys.Outtake;
-
+@Config
 @TeleOp (name="Outtake Test", group="Tests")
 public class OuttakeTest extends OpMode {
 
     public Outtake outtake;
-    public double power = 0.2;
+    public double power = 0.35;
     public double servoPosition;
     FtcDashboard dashboard;
     Telemetry dashboardTelemetry;
     TelemetryPacket packet = new TelemetryPacket();
     private Toggler modeTog = new Toggler(2);
     private Toggler gateTog = new Toggler(2);
-    private double level1 = 0;
-    private double level1_5 = 1200;
-    private double level2 = 1833.0;
-    private double level3 = 2900.0;
-    private int autoDropState = 1;
+    public static double level1 = 0.0;
+    public static double level1_5 = 238.0;
+    public static double level2 = 438;
+    public static double level3 = 890;
+    public static int autoDropState = 1;
 
     @Override
     public void init() {

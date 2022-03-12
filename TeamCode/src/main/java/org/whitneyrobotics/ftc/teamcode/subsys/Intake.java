@@ -12,7 +12,7 @@ public class Intake {
     private DcMotorEx intakeMotor;
 
     private int autoIntakeState = 0;
-    private static final double INTAKE_MOTOR_POWER = 1;
+    private static final double INTAKE_MOTOR_POWER = 0.8;
     public boolean autoIntakeInProgress = false;
     public boolean isReversed;
 
